@@ -1,0 +1,117 @@
+﻿<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#062b18">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="My Plant Collection">
+  <title>My Plant Collection</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/app-icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/app-icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-locked="true">
+  <section class="lock-screen" id="lockScreen" hidden>
+    <div class="lock-card">
+      <div class="lock-logo" aria-hidden="true">
+        <img src="assets/app-logo.png" alt="">
+      </div>
+      <p class="lock-kicker">Private app</p>
+      <h1>Unlock app</h1>
+      <p class="lock-text">Send me your device ID. I will send you a personal unlock code for this phone.</p>
+      <div class="device-box">
+        <span>Device ID</span>
+        <strong id="lockDeviceId"></strong>
+        <button type="button" id="copyDeviceId">Copy ID</button>
+      </div>
+      <form id="unlockForm">
+        <label>
+          Unlock code
+          <input id="unlockCodeInput" autocomplete="one-time-code" placeholder="e.g. IVETA-K7M4-9Q2A-ABCDEFGH" required>
+        </label>
+        <button type="submit">Unlock</button>
+        <p class="lock-error" id="lockError" hidden>This code does not match this device.</p>
+      </form>
+    </div>
+  </section>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand-dot" aria-hidden="true">
+        <img src="assets/app-logo.png" alt="">
+      </div>
+      <div class="brand-copy">
+        <p id="appSubtitle">Private collection</p>
+        <h1 id="appTitle">My Plant Collection</h1>
+      </div>
+    </header>
+
+    <section class="search-panel">
+      <input id="searchInput" type="search" placeholder="Search by name..." autocomplete="off">
+    </section>
+
+    <main>
+      <p class="license-note" id="licenseNote" hidden></p>
+      <section class="section-head">
+        <p id="sectionKicker">Rostliny</p>
+        <h2 id="sectionTitle"></h2>
+      </section>
+      <section class="category-strip" id="categoryStrip"></section>
+      <section class="edit-panel" id="editPanel" hidden></section>
+      <section class="card-grid" id="cardGrid"></section>
+      <section class="album-grid" id="albumGrid" hidden></section>
+      <section class="customer-list" id="customerList" hidden></section>
+      <section class="settings-panel" id="settingsPanel" hidden></section>
+      <section class="empty-state" id="emptyState" hidden>Nothing here yet.</section>
+    </main>
+
+    <section class="add-sheet" id="addSheet" hidden>
+      <button class="add-backdrop" type="button" data-add-close aria-label="Close"></button>
+      <div class="add-menu" role="menu" aria-label="What do you want to add">
+        <div class="add-menu-head">
+          <span>Add</span>
+          <button type="button" data-add-close>&times;</button>
+        </div>
+        <button type="button" data-add-choice="plant"><span>&#127807;</span><strong>New plant</strong></button>
+        <button type="button" data-add-choice="seedling" data-seedling-choice><span>&#127793;</span><strong>New seedling</strong></button>
+        <button type="button" data-add-choice="album" data-gallery-choice><span>&#128444;&#65039;</span><strong>New album</strong></button>
+        <button type="button" data-add-choice="customer" data-customer-choice><span>&#128100;</span><strong>New customer</strong></button>
+      </div>
+    </section>
+
+    <nav class="bottom-dock" id="bottomDock" aria-label="App sections">
+      <button class="active" type="button" data-view="plants"><span class="dock-icon">&#127807;</span><span>Plants</span></button>
+      <button type="button" data-view="seedlings" data-seedling-nav><span class="dock-icon">&#127793;</span><span>Seedlings</span></button>
+      <button type="button" data-view="gallery" data-gallery-nav><span class="dock-icon">&#128444;&#65039;</span><span>Gallery</span></button>
+      <button type="button" data-view="customers" data-customer-nav><span class="dock-icon">&#128100;</span><span>Customers</span></button>
+      <button type="button" data-view="settings"><span class="dock-icon">&#9881;&#65039;</span><span>Settings</span></button>
+      <button type="button" data-add-main><span class="dock-icon">+</span><span>Add</span></button>
+    </nav>
+  </div>
+
+  <section class="detail-sheet" id="detailSheet" hidden>
+    <button class="detail-backdrop" type="button" data-detail-close aria-label="Close"></button>
+    <div class="detail-card" id="detailContent"></div>
+  </section>
+
+  <section class="viewer" id="viewer" hidden>
+    <button class="viewer-close" id="viewerClose" type="button">&times;</button>
+    <button class="viewer-nav viewer-prev" id="viewerPrev" type="button">&#8249;</button>
+    <img id="viewerImage" alt="">
+    <button class="viewer-nav viewer-next" id="viewerNext" type="button">&#8250;</button>
+    <div class="viewer-caption" id="viewerCaption"></div>
+  </section>
+
+  <script>
+    if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("./service-worker.js"));
+    }
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>
+
