@@ -25,8 +25,10 @@ const defaults = {
     language: "en",
     showPrices: false,
     showGallery: true,
+    showMoments: true,
     showSeedlings: true,
     showCustomers: false,
+    showAllCategory: true,
   },
   plants: [
     {
@@ -41,6 +43,7 @@ const defaults = {
     },
   ],
   albums: [],
+  moments: [],
   customers: [],
 };
 
@@ -70,10 +73,14 @@ const PLANT_EMOJIS = [
 const CATEGORY_ICONS = Array.from({ length: 70 }, (_, index) => `assets/category-icons-final/icon-${String(index + 1).padStart(2, "0")}.png`);
 const DEFAULT_CATEGORY_ICON = CATEGORY_ICONS[0];
 const SEEDLING_ICON = CATEGORY_ICONS[1] || DEFAULT_CATEGORY_ICON;
+const ALL_CATEGORY_KEY = "__all__";
+const ALL_ICON = CATEGORY_ICONS[6] || DEFAULT_CATEGORY_ICON;
+const NO_ICON = "__none__";
 const TEXT = {
   cs: {
     plants: "Rostliny",
     gallery: "Galerie",
+    moments: "Deník",
     customers: "Z\u00e1kazn\u00edci",
     settings: "Nastaven\u00ed",
     add: "P\u0159idat",
@@ -81,6 +88,10 @@ const TEXT = {
     seedlings: "Semen\u00e1\u010dky",
     search: "Hledat podle n\u00e1zvu...",
     empty: "Nic tu zat\u00edm nen\u00ed.",
+    emptyHint: "Přidej první rostlinu do této části.",
+    emptyAddPlant: "Přidat rostlinu",
+    emptyAddCategory: "Vytvořit kategorii",
+    emptyOpenSettings: "Upravit appku",
     appTitle: "N\u00e1zev aplikace",
     subtitle: "Podnadpis",
     language: "Jazyk",
@@ -99,14 +110,18 @@ const TEXT = {
     addCategory: "P\u0159idat kategorii",
     categoryName: "N\u00e1zev kategorie",
     categoryEmoji: "Ikona",
+    noIcon: "Bez ikony",
     showPrices: "Zobrazovat ceny",
     showGallery: "Galerie fotek",
+    showMoments: "Deník / momenty",
     showSeedlings: "Moje semen\u00e1\u010dky",
     showCustomers: "Z\u00e1kazn\u00edci a objedn\u00e1vky",
+    showAllCategory: "Zobrazit kategorii Vše",
     saveSettings: "Ulo\u017eit nastaven\u00ed",
     newPlant: "Nov\u00e1 rostlina",
     newSeedling: "Nov\u00fd semen\u00e1\u010dek",
     newAlbum: "Nov\u00e9 album",
+    newMoment: "Zachytit moment",
     newCustomer: "Nov\u00fd z\u00e1kazn\u00edk",
     newCategory: "Nov\u00e1 kategorie",
     themeForest: "Zelen\u00e1",
@@ -124,6 +139,7 @@ const TEXT = {
   sk: {
     plants: "Rastliny",
     gallery: "Gal\u00e9ria",
+    moments: "Denník",
     customers: "Z\u00e1kazn\u00edci",
     settings: "Nastavenia",
     add: "Prida\u0165",
@@ -131,6 +147,10 @@ const TEXT = {
     seedlings: "Semen\u00e1\u010dky",
     search: "H\u013eada\u0165 pod\u013ea n\u00e1zvu...",
     empty: "Zatia\u013e tu ni\u010d nie je.",
+    emptyHint: "Pridaj prvú rastlinu do tejto časti.",
+    emptyAddPlant: "Pridať rastlinu",
+    emptyAddCategory: "Vytvoriť kategóriu",
+    emptyOpenSettings: "Upraviť appku",
     appTitle: "N\u00e1zov aplik\u00e1cie",
     subtitle: "Podnadpis",
     language: "Jazyk",
@@ -149,14 +169,18 @@ const TEXT = {
     addCategory: "Prida\u0165 kateg\u00f3riu",
     categoryName: "N\u00e1zov kateg\u00f3rie",
     categoryEmoji: "Ikona",
+    noIcon: "Bez ikony",
     showPrices: "Zobrazova\u0165 ceny",
     showGallery: "Gal\u00e9ria fotiek",
+    showMoments: "Denník / momenty",
     showSeedlings: "Moje semen\u00e1\u010dky",
     showCustomers: "Z\u00e1kazn\u00edci a objedn\u00e1vky",
+    showAllCategory: "Zobraziť kategóriu Všetko",
     saveSettings: "Ulo\u017ei\u0165 nastavenia",
     newPlant: "Nov\u00e1 rastlina",
     newSeedling: "Nov\u00fd semen\u00e1\u010dek",
     newAlbum: "Nov\u00fd album",
+    newMoment: "Zachytiť moment",
     newCustomer: "Nov\u00fd z\u00e1kazn\u00edk",
     newCategory: "Nov\u00e1 kateg\u00f3ria",
     themeForest: "Zelen\u00e1",
@@ -174,6 +198,7 @@ const TEXT = {
   en: {
     plants: "Plants",
     gallery: "Gallery",
+    moments: "Moments",
     customers: "Customers",
     settings: "Settings",
     add: "Add",
@@ -181,6 +206,10 @@ const TEXT = {
     seedlings: "Seedlings",
     search: "Search by name...",
     empty: "Nothing here yet.",
+    emptyHint: "Add the first plant to this section.",
+    emptyAddPlant: "Add plant",
+    emptyAddCategory: "Create category",
+    emptyOpenSettings: "Personalize app",
     appTitle: "App name",
     subtitle: "Subtitle",
     language: "Language",
@@ -199,14 +228,18 @@ const TEXT = {
     addCategory: "Add category",
     categoryName: "Category name",
     categoryEmoji: "Icon",
+    noIcon: "No icon",
     showPrices: "Show prices",
     showGallery: "Photo gallery",
+    showMoments: "Moments diary",
     showSeedlings: "My seedlings",
     showCustomers: "Customers and orders",
+    showAllCategory: "Show All category",
     saveSettings: "Save settings",
     newPlant: "New plant",
     newSeedling: "New seedling",
     newAlbum: "New album",
+    newMoment: "Capture moment",
     newCustomer: "New customer",
     newCategory: "New category",
     editCategory: "Edit category",
@@ -226,6 +259,7 @@ const TEXT = {
   pl: {
     plants: "Ro\u015bliny",
     gallery: "Galeria",
+    moments: "Dziennik",
     customers: "Klienci",
     settings: "Ustawienia",
     add: "Dodaj",
@@ -233,6 +267,10 @@ const TEXT = {
     seedlings: "Siewki",
     search: "Szukaj wed\u0142ug nazwy...",
     empty: "Na razie nic tu nie ma.",
+    emptyHint: "Dodaj pierwszą roślinę do tej sekcji.",
+    emptyAddPlant: "Dodaj roślinę",
+    emptyAddCategory: "Utwórz kategorię",
+    emptyOpenSettings: "Dostosuj aplikację",
     appTitle: "Nazwa aplikacji",
     subtitle: "Podtytu\u0142",
     language: "J\u0119zyk",
@@ -251,14 +289,18 @@ const TEXT = {
     addCategory: "Dodaj kategori\u0119",
     categoryName: "Nazwa kategorii",
     categoryEmoji: "Ikona",
+    noIcon: "Bez ikony",
     showPrices: "Pokazuj ceny",
     showGallery: "Galeria zdj\u0119\u0107",
+    showMoments: "Dziennik / momenty",
     showSeedlings: "Moje siewki",
     showCustomers: "Klienci i zam\u00f3wienia",
+    showAllCategory: "Pokaż kategorię Wszystko",
     saveSettings: "Zapisz ustawienia",
     newPlant: "Nowa ro\u015blina",
     newSeedling: "Nowa siewka",
     newAlbum: "Nowy album",
+    newMoment: "Uchwyć moment",
     newCustomer: "Nowy klient",
     newCategory: "Nowa kategoria",
     editCategory: "Edytuj kategorię",
@@ -280,6 +322,7 @@ const FORM_TEXT = {
   cs: {
     editPlant: "Upravit rostlinu",
     editAlbum: "Upravit album",
+    editMoment: "Upravit moment",
     editCustomer: "Upravit z\u00e1kazn\u00edka",
     name: "N\u00e1zev",
     personName: "Jm\u00e9no",
@@ -318,10 +361,20 @@ const FORM_TEXT = {
     plantFallback: "Rostlina",
     photoCount: "{count} fotek",
     storageError: "Data nebo fotky se nepoda\u0159ilo ulo\u017eit. Zkontroluj voln\u00e9 m\u00edsto v telefonu a zkus to znovu.",
+    deleteMoment: "Vymazat moment",
+    momentDate: "Datum",
+    momentText: "Co se stalo",
+    momentTextPlaceholder: "např. první květ, přesazeno, nový list...",
+    capturePhoto: "Odfotit teď",
+    choosePhoto: "Vybrat z telefonu",
+    fillMoment: "Přidej fotku nebo krátkou poznámku.",
+    latestMoments: "Poslední momenty",
+    memoryToday: "Vzpomínka na dnešek",
   },
   sk: {
     editPlant: "Upravi\u0165 rastlinu",
     editAlbum: "Upravi\u0165 album",
+    editMoment: "Upraviť moment",
     editCustomer: "Upravi\u0165 z\u00e1kazn\u00edka",
     name: "N\u00e1zov",
     personName: "Meno",
@@ -360,10 +413,20 @@ const FORM_TEXT = {
     plantFallback: "Rastlina",
     photoCount: "{count} fotiek",
     storageError: "D\u00e1ta alebo fotky sa nepodarilo ulo\u017ei\u0165. Skontroluj vo\u013en\u00e9 miesto v telef\u00f3ne a sk\u00fas to znova.",
+    deleteMoment: "Vymazať moment",
+    momentDate: "Dátum",
+    momentText: "Čo sa stalo",
+    momentTextPlaceholder: "napr. prvý kvet, presadené, nový list...",
+    capturePhoto: "Odfotiť teraz",
+    choosePhoto: "Vybrať z telefónu",
+    fillMoment: "Pridaj fotku alebo krátku poznámku.",
+    latestMoments: "Posledné momenty",
+    memoryToday: "Spomienka na dnešok",
   },
   en: {
     editPlant: "Edit plant",
     editAlbum: "Edit album",
+    editMoment: "Edit moment",
     editCustomer: "Edit customer",
     name: "Name",
     personName: "Name",
@@ -402,10 +465,20 @@ const FORM_TEXT = {
     plantFallback: "Plant",
     photoCount: "{count} photos",
     storageError: "Data or photos could not be saved. Check free space on the phone and try again.",
+    deleteMoment: "Delete moment",
+    momentDate: "Date",
+    momentText: "What happened",
+    momentTextPlaceholder: "e.g. first bloom, repotted, new leaf...",
+    capturePhoto: "Take photo now",
+    choosePhoto: "Choose from phone",
+    fillMoment: "Add a photo or a short note.",
+    latestMoments: "Latest moments",
+    memoryToday: "Memory from today",
   },
   pl: {
     editPlant: "Edytuj ro\u015blin\u0119",
     editAlbum: "Edytuj album",
+    editMoment: "Edytuj moment",
     editCustomer: "Edytuj klienta",
     name: "Nazwa",
     personName: "Imi\u0119",
@@ -444,6 +517,15 @@ const FORM_TEXT = {
     plantFallback: "Ro\u015blina",
     photoCount: "{count} zdj\u0119\u0107",
     storageError: "Nie uda\u0142o si\u0119 zapisa\u0107 danych lub zdj\u0119\u0107. Sprawd\u017a wolne miejsce w telefonie i spr\u00f3buj ponownie.",
+    deleteMoment: "Usuń moment",
+    momentDate: "Data",
+    momentText: "Co się stało",
+    momentTextPlaceholder: "np. pierwszy kwiat, przesadzone, nowy liść...",
+    capturePhoto: "Zrób zdjęcie teraz",
+    choosePhoto: "Wybierz z telefonu",
+    fillMoment: "Dodaj zdjęcie albo krótką notatkę.",
+    latestMoments: "Ostatnie momenty",
+    memoryToday: "Wspomnienie z dziś",
   },
 };
 let storageWrite = Promise.resolve();
@@ -469,6 +551,7 @@ const state = {
   viewerLongPressTimer: 0,
   viewerLongPressFired: false,
   unlocked: false,
+  momentSlideTimer: null,
   license: null,
   deviceId: "",
   data: structuredClone(defaults),
@@ -477,7 +560,6 @@ const state = {
 const $ = (selector) => document.querySelector(selector);
 const els = {
   title: $("#appTitle"),
-  subtitle: $("#appSubtitle"),
   search: $("#searchInput"),
   kicker: $("#sectionKicker"),
   sectionTitle: $("#sectionTitle"),
@@ -486,8 +568,10 @@ const els = {
   cardGrid: $("#cardGrid"),
   albumGrid: $("#albumGrid"),
   customerList: $("#customerList"),
+  momentList: $("#momentList"),
   settingsPanel: $("#settingsPanel"),
   empty: $("#emptyState"),
+  quickAdd: $("#quickAdd"),
   addSheet: $("#addSheet"),
   detailSheet: $("#detailSheet"),
   detailContent: $("#detailContent"),
@@ -631,8 +715,11 @@ function isImageIcon(value) {
 }
 
 function categoryIcon(category) {
-  const saved = state.data.settings.categoryIcons?.[category];
+  const key = category === "all" ? ALL_CATEGORY_KEY : category;
+  const saved = state.data.settings.categoryIcons?.[key] || (category === "all" ? state.data.settings.categoryIcons?.all : null);
+  if (category === "all" && saved === NO_ICON) return "";
   if (isImageIcon(saved)) return saved;
+  if (category === "all") return ALL_ICON;
   return category === SEEDLING_CATEGORY ? SEEDLING_ICON : DEFAULT_CATEGORY_ICON;
 }
 
@@ -641,7 +728,9 @@ function iconMarkup(src, label = "", className = "cat-icon") {
 }
 
 function categoryLabel(category) {
-  return `<span class="cat-icon"><img src="${esc(categoryIcon(category))}" alt="${esc(category)}"></span><span>${esc(category)}</span>`;
+  const label = category === "all" ? t("all") : category;
+  const icon = categoryIcon(category);
+  return `${icon ? `<span class="cat-icon"><img src="${esc(icon)}" alt="${esc(label)}"></span>` : ""}<span>${esc(label)}</span>`;
 }
 
 function plantTag(item) {
@@ -744,11 +833,21 @@ async function writeStoredState(data) {
   }
 }
 
+function localizeDemoPlants(plants, language) {
+  const demoNames = { cs: "Ukázková rostlina", sk: "Ukážková rastlina", en: "Demo plant", pl: "Roślina przykładowa" };
+  const oldDemoNames = new Set(["Ukázková rostlina", "Ukazková rostlina", "Ukážková rastlina", "Ukazkova rastlina", "Demo plant", "Roślina przykładowa"]);
+  plants.forEach((item) => {
+    if ((item.id === "demo-1" || item.seed === true) && oldDemoNames.has(String(item.name || ""))) {
+      item.name = demoNames[language] || demoNames.en;
+    }
+  });
+}
 function normalizeData(data) {
   const merged = {
     settings: { ...defaults.settings, ...(data?.settings || {}) },
     plants: Array.isArray(data?.plants) ? data.plants : defaults.plants,
     albums: Array.isArray(data?.albums) ? data.albums : [],
+    moments: Array.isArray(data?.moments) ? data.moments : [],
     customers: Array.isArray(data?.customers) ? data.customers : [],
   };
   if (merged.settings.title === "Moje rostliny") merged.settings.title = "My Plant Collection";
@@ -760,8 +859,11 @@ function normalizeData(data) {
   merged.settings.customColor = normalizeHex(merged.settings.customColor);
   merged.settings.categoryIcons = typeof merged.settings.categoryIcons === "object" && merged.settings.categoryIcons ? merged.settings.categoryIcons : {};
   merged.settings.showGallery = merged.settings.showGallery !== false;
+  merged.settings.showMoments = merged.settings.showMoments !== false;
   merged.settings.showSeedlings = merged.settings.showSeedlings !== false;
+  merged.settings.showAllCategory = merged.settings.showAllCategory !== false;
   merged.settings.categories = merged.settings.categories.filter((category) => category !== SEEDLING_CATEGORY);
+  localizeDemoPlants(merged.plants, merged.settings.language || "en");
   merged.plants = merged.plants.map((item) => ({
     ...item,
     type: "plant",
@@ -855,10 +957,15 @@ function photoManager(item) {
 
 function categoryForm(category = "") {
   const original = category || "";
+  const isAll = original === "all";
   const currentIcon = original ? categoryIcon(original) : DEFAULT_CATEGORY_ICON;
+  const displayName = isAll ? t("all") : original;
+  const nameField = isAll
+    ? `<label>${esc(t("categoryName"))}<input value="${esc(displayName)}" autocomplete="off" readonly></label><input type="hidden" name="name" value="all">`
+    : `<label>${esc(t("categoryName"))}<input name="name" value="${esc(original)}" autocomplete="off" required></label>`;
   return `<form id="editForm" class="edit-card" data-kind="category" data-original="${esc(original)}">
     <div class="edit-head"><h3>${esc(original ? t("editCategory") : t("newCategory"))}</h3><button type="button" class="soft-close" data-cancel-edit>&times;</button></div>
-    <label>${esc(t("categoryName"))}<input name="name" value="${esc(original)}" autocomplete="off" required></label>
+    ${nameField}
     <fieldset class="icon-choice-grid">
       <legend>${esc(t("categoryEmoji"))}</legend>
       ${CATEGORY_ICONS.map((icon) => `<label class="icon-choice">
@@ -867,7 +974,7 @@ function categoryForm(category = "") {
       </label>`).join("")}
     </fieldset>
     <button class="save-pill" type="submit">${esc(ft("save"))}</button>
-    ${original ? `<button type="button" class="delete-bottom" data-delete-category="${esc(original)}">${esc(t("deleteCategory"))}</button>` : ""}
+    ${original && !isAll ? `<button type="button" class="delete-bottom" data-delete-category="${esc(original)}">${esc(t("deleteCategory"))}</button>` : ""}
   </form>`;
 }
 
@@ -1000,15 +1107,98 @@ function editForm() {
   if (editing.kind === "plant") return plantForm(findPlant(editing.id));
   if (editing.kind === "album") return albumForm(findAlbum(editing.id));
   if (editing.kind === "customer") return customerForm(findCustomer(editing.id));
+  if (editing.kind === "moment") return momentForm(findMoment(editing.id));
   if (editing.kind === "new-plant") return plantForm();
   if (editing.kind === "new-seedling") return plantForm(null, true);
   if (editing.kind === "new-album") return albumForm();
   if (editing.kind === "new-customer") return customerForm();
+  if (editing.kind === "new-moment") return momentForm();
   if (editing.kind === "category") return categoryForm(editing.name);
   if (editing.kind === "new-category") return categoryForm();
   return "";
 }
 
+
+function findMoment(id) {
+  return state.data.moments.find((item) => item.id === id) || null;
+}
+
+function activeMoments() {
+  const needle = norm(state.search);
+  return [...(state.data.moments || [])]
+    .filter((item) => !needle || norm((item.note || "") + " " + (item.date || "")).includes(needle))
+    .sort((a, b) => String(b.date || b.createdAt || "").localeCompare(String(a.date || a.createdAt || "")));
+}
+
+function formatDate(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return new Intl.DateTimeFormat(state.data.settings.language || "en", { day: "numeric", month: "short", year: "numeric" }).format(date);
+}
+
+function momentForm(item = null) {
+  const dateValue = item?.date || new Date().toISOString().slice(0, 10);
+  return `<form id="editForm" class="edit-card" data-kind="moment" data-id="${esc(item?.id || "")}">
+    <div class="edit-head"><h3>${item ? esc(ft("editMoment")) : esc(t("newMoment"))}</h3><button type="button" class="soft-close" data-cancel-edit>&times;</button></div>
+    <label>${esc(ft("momentDate"))}<input name="date" type="date" value="${esc(dateValue)}"></label>
+    <label>${esc(ft("momentText"))}<textarea name="note" rows="3" placeholder="${esc(ft("momentTextPlaceholder"))}">${esc(item?.note || "")}</textarea></label>
+    <div class="moment-photo-actions">
+      <label><span>${esc(ft("capturePhoto"))}</span><input name="cameraPhoto" type="file" accept="image/*" capture="environment"></label>
+      <label><span>${esc(ft("choosePhoto"))}</span><input name="photos" type="file" accept="image/*" multiple></label>
+    </div>
+    ${photoManager(item)}
+    <button class="save-pill" type="submit">${esc(ft("save"))}</button>
+    ${item ? `<button type="button" class="delete-bottom" data-delete-current>${esc(ft("deleteMoment"))}</button>` : ""}
+  </form>`;
+}
+
+function momentCard(item, compact = false) {
+  const hasPhoto = item.photos?.[0];
+  return `<article class="moment-card ${compact ? "compact" : ""}">
+    <button class="moment-photo" type="button" ${hasPhoto ? `data-open-moment-photo="${esc(item.id)}"` : `data-edit-moment="${esc(item.id)}"`}>${photo(hasPhoto, item.note || t("moments"))}</button>
+    <div class="moment-body">
+      <time>${esc(formatDate(item.date || item.createdAt))}</time>
+      ${item.note ? `<p>${esc(item.note)}</p>` : `<p class="muted">${esc(t("newMoment"))}</p>`}
+    </div>
+    <button class="card-edit" type="button" data-edit-moment="${esc(item.id)}">&#9998;</button>
+  </article>`;
+}
+
+function sameMonthDay(a, b) {
+  if (!a || !b) return false;
+  const da = new Date(a);
+  const db = new Date(b);
+  if (Number.isNaN(da.getTime()) || Number.isNaN(db.getTime())) return false;
+  return da.getMonth() === db.getMonth() && da.getDate() === db.getDate();
+}
+
+function momentHero(moments) {
+  if (!moments.length) return "";
+  const today = new Date();
+  const anniversary = moments.find((item) => {
+    const d = new Date(item.date || item.createdAt || "");
+    return !Number.isNaN(d.getTime()) && d.getFullYear() < today.getFullYear() && sameMonthDay(d, today);
+  });
+  const item = anniversary || moments[0];
+  const src = item.photos?.[0] || "";
+  const title = anniversary ? ft("memoryToday") : ft("latestMoments");
+  return `<section class="moment-hero">
+    <button type="button" class="moment-hero-photo" ${src ? `data-open-moment-photo="${esc(item.id)}"` : `data-edit-moment="${esc(item.id)}"`}>${photo(src, item.note || t("moments"))}</button>
+    <div class="moment-hero-body">
+      <span>${esc(title)}</span>
+      <h3>${esc(formatDate(item.date || item.createdAt))}</h3>
+      ${item.note ? `<p>${esc(item.note)}</p>` : `<p>${esc(t("newMoment"))}</p>`}
+      <button type="button" data-edit-moment="${esc(item.id)}">${esc(ft("edit"))}</button>
+    </div>
+  </section>`;
+}
+function recentMomentsBlock() {
+  if (!state.data.settings.showMoments) return "";
+  const moments = activeMoments().slice(0, 3);
+  if (!moments.length) return "";
+  return `<section class="recent-moments"><div><span>${esc(ft("latestMoments"))}</span><button type="button" data-view-jump="moments">${esc(t("moments"))}</button></div><div class="recent-moment-row" data-moment-slideshow>${moments.map((item) => momentCard(item, true)).join("")}</div></section>`;
+}
 function findPlant(id) {
   return state.data.plants.find((item) => item.id === id) || null;
 }
@@ -1124,7 +1314,6 @@ function settingsView() {
     <section class="settings-section">
       <h3>${esc(t("appIdentity"))}</h3>
       <label>${t("appTitle")}<input name="title" value="${esc(state.data.settings.title)}" autocomplete="off"></label>
-      <label>${t("subtitle")}<input name="subtitle" value="${esc(state.data.settings.subtitle || "")}" autocomplete="off" placeholder="My collection"></label>
     </section>
     <details class="settings-section" open>
       <summary>${esc(t("appearance"))}</summary>
@@ -1153,8 +1342,10 @@ function settingsView() {
       <summary>${esc(t("visibleSections"))}</summary>
       <label class="toggle-row"><span>${t("showPrices")}</span><input name="showPrices" type="checkbox" ${state.data.settings.showPrices ? "checked" : ""}></label>
       <label class="toggle-row"><span>${t("showGallery")}</span><input name="showGallery" type="checkbox" ${state.data.settings.showGallery ? "checked" : ""}></label>
+      <label class="toggle-row"><span>${t("showMoments")}</span><input name="showMoments" type="checkbox" ${state.data.settings.showMoments ? "checked" : ""}></label>
       <label class="toggle-row"><span>${t("showSeedlings")}</span><input name="showSeedlings" type="checkbox" ${state.data.settings.showSeedlings ? "checked" : ""}></label>
       <label class="toggle-row"><span>${t("showCustomers")}</span><input name="showCustomers" type="checkbox" ${state.data.settings.showCustomers ? "checked" : ""}></label>
+      <label class="toggle-row"><span>${t("showAllCategory")}</span><input name="showAllCategory" type="checkbox" ${state.data.settings.showAllCategory !== false ? "checked" : ""}></label>
     </details>
     <button class="save-pill" type="submit">${t("saveSettings")}</button>
   </form>`;
@@ -1166,9 +1357,72 @@ function renderCategories() {
     return;
   }
   const buttons = state.data.settings.categories
-    .map((category) => `<button type="button" class="${state.category === category ? "active" : ""}" data-category="${esc(category)}">${categoryLabel(category)}</button>`)
-    .concat(`<button type="button" class="${state.category === "all" ? "active" : ""}" data-category="all">${iconMarkup(CATEGORY_ICONS[6] || DEFAULT_CATEGORY_ICON, t("all"))}<span>${esc(t("all"))}</span></button>`);
+    .map((category) => `<button type="button" class="${state.category === category ? "active" : ""}" data-category="${esc(category)}">${categoryLabel(category)}</button>`);
+  if (state.data.settings.showAllCategory !== false) {
+    buttons.push(`<button type="button" class="${state.category === "all" ? "active" : ""}" data-category="all">${categoryLabel("all")}</button>`);
+  }
   els.categoryStrip.innerHTML = buttons.join("");
+}
+
+function emptyStateView() {
+  const primaryKind = state.view === "gallery" ? "album" : state.view === "moments" ? "moment" : state.view === "seedlings" ? "seedling" : state.view === "customers" ? "customer" : "plant";
+  const primaryLabel = state.view === "gallery" ? t("newAlbum") : state.view === "moments" ? t("newMoment") : state.view === "seedlings" ? t("newSeedling") : state.view === "customers" ? t("newCustomer") : t("emptyAddPlant");
+  return `<div class="empty-card">
+    <p class="empty-eyebrow">${esc(labelsForEmpty()[0])}</p>
+    <h3>${esc(t("empty"))}</h3>
+    <p>${esc(t("emptyHint"))}</p>
+    <div class="empty-actions">
+      <button type="button" data-empty-add="${esc(primaryKind)}">${esc(primaryLabel)}</button>
+    </div>
+  </div>`;
+}
+
+function labelsForEmpty() {
+  const labels = { plants: t("plants"), seedlings: t("seedlings"), gallery: t("gallery"), moments: t("moments"), customers: t("customers") };
+  return [labels[state.view] || t("plants")];
+}
+
+function quickAddKind() {
+  if (state.view === "seedlings") return "seedling";
+  if (state.view === "gallery") return "album";
+  if (state.view === "moments") return "moment";
+  if (state.view === "customers") return "customer";
+  return "plant";
+}
+
+function quickAddLabel(kind = quickAddKind()) {
+  if (kind === "seedling") return t("newSeedling");
+  if (kind === "album") return t("newAlbum");
+  if (kind === "moment") return t("newMoment");
+  if (kind === "customer") return t("newCustomer");
+  return t("emptyAddPlant");
+}
+
+function renderQuickAdd() {
+  if (!els.quickAdd) return;
+  const hidden = !!state.editing || state.addOpen || state.detail || state.view === "settings";
+  const kind = quickAddKind();
+  els.quickAdd.hidden = hidden;
+  els.quickAdd.dataset.quickAdd = kind;
+  els.quickAdd.innerHTML = "<span>+</span><strong>" + esc(quickAddLabel(kind)) + "</strong>";
+}
+function startMomentSlideshow() {
+  if (state.momentSlideTimer) {
+    clearInterval(state.momentSlideTimer);
+    state.momentSlideTimer = null;
+  }
+  const row = document.querySelector("[data-moment-slideshow]");
+  if (!row || row.children.length < 2) return;
+  state.momentSlideTimer = setInterval(() => {
+    if (!document.body.contains(row)) {
+      clearInterval(state.momentSlideTimer);
+      state.momentSlideTimer = null;
+      return;
+    }
+    const next = row.scrollLeft + Math.max(150, Math.round(row.clientWidth * 0.78));
+    if (next >= row.scrollWidth - row.clientWidth - 8) row.scrollTo({ left: 0, behavior: "smooth" });
+    else row.scrollTo({ left: next, behavior: "smooth" });
+  }, 3600);
 }
 
 function renderDetail() {
@@ -1181,19 +1435,21 @@ function render() {
   renderLock();
   if (!state.unlocked) return;
   if (!state.data.settings.showGallery && state.view === "gallery") state.view = "plants";
+  if (!state.data.settings.showMoments && state.view === "moments") state.view = "plants";
   if (!state.data.settings.showSeedlings && state.view === "seedlings") state.view = "plants";
   if (!state.data.settings.showCustomers && state.view === "customers") state.view = "plants";
-  if (state.category !== "all" && !state.data.settings.categories.includes(state.category)) state.category = "all";
+  if (state.data.settings.showAllCategory === false && state.category === "all") state.category = state.data.settings.categories[0] || "all";
+  if (state.category !== "all" && !state.data.settings.categories.includes(state.category)) state.category = state.data.settings.showAllCategory === false ? (state.data.settings.categories[0] || "all") : "all";
   document.body.dataset.view = state.view;
   els.title.textContent = state.data.settings.title || "My Plant Collection";
-  els.subtitle.textContent = state.data.settings.subtitle || "Private collection";
   els.search.placeholder = t("search");
-  els.empty.textContent = t("empty");
+  els.empty.innerHTML = emptyStateView();
   applyTheme();
   const labels = {
     plants: t("plants"),
     seedlings: t("seedlings"),
     gallery: t("gallery"),
+    moments: t("moments"),
     customers: t("customers"),
     settings: t("settings"),
   };
@@ -1208,36 +1464,44 @@ function render() {
   const seedlings = activeSeedlings();
   const albums = activeAlbums();
   const customers = activeCustomers();
+  const moments = activeMoments();
   els.cardGrid.hidden = state.view !== "plants" && state.view !== "seedlings";
   els.albumGrid.hidden = state.view !== "gallery";
   els.customerList.hidden = state.view !== "customers";
+  els.momentList.hidden = state.view !== "moments";
   els.settingsPanel.hidden = state.view !== "settings";
   els.cardGrid.innerHTML = state.view === "plants" ? plants.map(plantCard).join("") : state.view === "seedlings" ? seedlings.map(plantCard).join("") : "";
   els.albumGrid.innerHTML = state.view === "gallery" ? albums.map(albumCard).join("") : "";
   els.customerList.innerHTML = state.view === "customers" ? customers.map(customerCard).join("") : "";
+  els.momentList.innerHTML = state.view === "moments" ? momentHero(moments) + moments.map((item) => momentCard(item)).join("") : "";
   els.settingsPanel.innerHTML = state.view === "settings" ? settingsView() : "";
 
   document.querySelectorAll("[data-gallery-nav], [data-gallery-choice]").forEach((el) => { el.hidden = !state.data.settings.showGallery; });
+  document.querySelectorAll("[data-moment-nav], [data-moment-choice]").forEach((el) => { el.hidden = !state.data.settings.showMoments; });
   document.querySelectorAll("[data-seedling-nav], [data-seedling-choice]").forEach((el) => { el.hidden = !state.data.settings.showSeedlings; });
   document.querySelectorAll("[data-customer-nav], [data-customer-choice]").forEach((el) => { el.hidden = !state.data.settings.showCustomers; });
-  const visibleNav = 3 + (state.data.settings.showSeedlings ? 1 : 0) + (state.data.settings.showGallery ? 1 : 0) + (state.data.settings.showCustomers ? 1 : 0);
+  const visibleNav = 3 + (state.data.settings.showSeedlings ? 1 : 0) + (state.data.settings.showGallery ? 1 : 0) + (state.data.settings.showMoments ? 1 : 0) + (state.data.settings.showCustomers ? 1 : 0);
   document.querySelector("#bottomDock").style.setProperty("--dock-count", visibleNav);
   document.querySelector("[data-view='plants'] span:not(.dock-icon)").textContent = t("plants");
   document.querySelector("[data-view='seedlings'] span:not(.dock-icon)").textContent = t("seedlings");
   document.querySelector("[data-view='gallery'] span:not(.dock-icon)").textContent = t("gallery");
+  document.querySelector("[data-view='moments'] span:not(.dock-icon)").textContent = t("moments");
   document.querySelector("[data-view='customers'] span:not(.dock-icon)").textContent = t("customers");
   document.querySelector("[data-view='settings'] span:not(.dock-icon)").textContent = t("settings");
   document.querySelector("[data-add-main] span:not(.dock-icon)").textContent = t("add");
   document.querySelector("[data-add-choice='plant'] strong").textContent = t("newPlant");
   document.querySelector("[data-add-choice='seedling'] strong").textContent = t("newSeedling");
   document.querySelector("[data-add-choice='album'] strong").textContent = t("newAlbum");
+  document.querySelector("[data-add-choice='moment'] strong").textContent = t("newMoment");
   document.querySelector("[data-add-choice='customer'] strong").textContent = t("newCustomer");
   document.querySelector("[data-add-choice='category'] strong").textContent = t("newCategory");
   document.querySelectorAll("[data-view]").forEach((button) => button.classList.toggle("active", button.dataset.view === state.view));
-  const emptyCount = state.view === "plants" ? plants.length : state.view === "seedlings" ? seedlings.length : state.view === "gallery" ? albums.length : state.view === "customers" ? customers.length : 1;
+  const emptyCount = state.view === "plants" ? plants.length : state.view === "seedlings" ? seedlings.length : state.view === "gallery" ? albums.length : state.view === "moments" ? moments.length : state.view === "customers" ? customers.length : 1;
   els.empty.hidden = emptyCount > 0 || !!state.editing;
   els.addSheet.hidden = !state.addOpen;
+  renderQuickAdd();
   renderDetail();
+  startMomentSlideshow();
 }
 
 function readFiles(input) {
@@ -1273,7 +1537,7 @@ async function submitEdit(form) {
   const id = form.dataset.id || "";
   const fields = form.elements;
   const name = fields.name?.value.trim();
-  if (!name) {
+  if (kind !== "moment" && !name) {
     fields.name?.focus();
     alert(ft("fillName"));
     return;
@@ -1282,6 +1546,15 @@ async function submitEdit(form) {
     const original = form.dataset.original || "";
     const categories = cleanCategories([...(state.data.settings.categories || []), name]).filter((category) => category !== SEEDLING_CATEGORY);
     state.data.settings.categoryIcons = state.data.settings.categoryIcons || {};
+    if (original === "all") {
+      state.data.settings.categoryIcons[ALL_CATEGORY_KEY] = fields.categoryIcon?.value || ALL_ICON;
+      state.category = "all";
+      state.view = "plants";
+      state.editing = null;
+      save();
+      render();
+      return;
+    }
     if (original && original !== name) {
       state.data.plants.forEach((item) => {
         if (!item.seedling && item.category === original) item.category = name;
@@ -1299,6 +1572,7 @@ async function submitEdit(form) {
   }
 
   const photos = await readFiles(fields.photos);
+  const extraPhotos = kind === "moment" ? await readFiles(fields.cameraPhoto) : [];
 
   if (kind === "plant") {
     let item = findPlant(id);
@@ -1328,6 +1602,24 @@ async function submitEdit(form) {
     state.view = "gallery";
   }
 
+  if (kind === "moment") {
+    let item = findMoment(id);
+    if (!item) {
+      item = { id: uid("moment"), type: "moment", photos: [], createdAt: new Date().toISOString() };
+      state.data.moments.push(item);
+    }
+    const allPhotos = [...extraPhotos, ...photos];
+    const note = fields.note?.value.trim() || "";
+    if (!note && !allPhotos.length && !(item.photos || []).length) {
+      alert(ft("fillMoment"));
+      return;
+    }
+    item.date = fields.date?.value || new Date().toISOString().slice(0, 10);
+    item.note = note;
+    item.photos = [...(item.photos || []), ...allPhotos];
+    state.view = "moments";
+  }
+
   if (kind === "customer") {
     let item = findCustomer(id);
     if (!item) {
@@ -1350,21 +1642,24 @@ async function submitEdit(form) {
 
 function submitSettings(form) {
   state.data.settings.title = form.elements.title.value.trim() || "My Plant Collection";
-  state.data.settings.subtitle = form.elements.subtitle.value.trim() || "Private collection";
   state.data.settings.theme = form.elements.theme.value || "forest";
   state.data.settings.themeMode = ["light", "dark"].includes(form.elements.themeMode.value) ? form.elements.themeMode.value : "dark";
   state.data.settings.currency = CURRENCIES[form.elements.currency.value] ? form.elements.currency.value : "EUR";
   state.data.settings.customColor = normalizeHex(form.elements.customColor.value);
   state.data.settings.language = form.elements.language.value || "en";
+      localizeDemoPlants(state.data.plants, state.data.settings.language);
   state.data.settings.showSeedlings = form.elements.showSeedlings.checked;
   state.data.settings.categories = cleanCategories(state.data.settings.categories).filter((category) => category !== SEEDLING_CATEGORY);
   if (!state.data.settings.categories.length) state.data.settings.categories = ["Plants"];
   state.data.settings.showPrices = form.elements.showPrices.checked;
   state.data.settings.showGallery = form.elements.showGallery.checked;
+  state.data.settings.showMoments = form.elements.showMoments.checked;
   state.data.settings.showCustomers = form.elements.showCustomers.checked;
+  state.data.settings.showAllCategory = form.elements.showAllCategory?.checked !== false;
   if (!state.data.settings.showGallery && state.view === "gallery") state.view = "plants";
   if (!state.data.settings.showSeedlings && state.view === "seedlings") state.view = "plants";
   if (!state.data.settings.showCustomers && state.view === "customers") state.view = "plants";
+  if (state.data.settings.showAllCategory === false && state.category === "all") state.category = state.data.settings.categories[0] || "all";
   state.data.plants.forEach((plant) => {
     if (!state.data.settings.categories.includes(plant.category)) plant.category = state.data.settings.categories[0];
   });
@@ -1379,6 +1674,7 @@ function currentEditItem() {
   if (!state.editing) return null;
   if (state.editing.kind === "plant") return findPlant(state.editing.id);
   if (state.editing.kind === "album") return findAlbum(state.editing.id);
+  if (state.editing.kind === "moment") return findMoment(state.editing.id);
   return null;
 }
 
@@ -1429,6 +1725,11 @@ function deleteCurrent() {
     if (!item || !confirm(ft("confirmDelete", { name: item.name }))) return;
     state.data.albums = state.data.albums.filter((album) => album.id !== item.id);
   }
+  if (state.editing.kind === "moment") {
+    const item = findMoment(state.editing.id);
+    if (!item || !confirm(ft("confirmDelete", { name: item.note || t("moments") }))) return;
+    state.data.moments = state.data.moments.filter((moment) => moment.id !== item.id);
+  }
   if (state.editing.kind === "customer") {
     const item = findCustomer(state.editing.id);
     if (!item || !confirm(ft("confirmDelete", { name: item.name }))) return;
@@ -1442,16 +1743,17 @@ function deleteCurrent() {
 function openAdd(kind) {
   if (kind === "customer" && !state.data.settings.showCustomers) return;
   if (kind === "album" && !state.data.settings.showGallery) return;
+  if (kind === "moment" && !state.data.settings.showMoments) return;
   if (kind === "seedling" && !state.data.settings.showSeedlings) return;
   state.addOpen = false;
   state.detail = null;
-  state.editing = { kind: kind === "seedling" ? "new-seedling" : kind === "plant" ? "new-plant" : kind === "album" ? "new-album" : kind === "category" ? "new-category" : "new-customer" };
-  state.view = kind === "seedling" ? "seedlings" : kind === "album" ? "gallery" : kind === "customer" ? "customers" : "plants";
+  state.editing = { kind: kind === "seedling" ? "new-seedling" : kind === "plant" ? "new-plant" : kind === "album" ? "new-album" : kind === "moment" ? "new-moment" : kind === "category" ? "new-category" : "new-customer" };
+  state.view = kind === "seedling" ? "seedlings" : kind === "album" ? "gallery" : kind === "moment" ? "moments" : kind === "customer" ? "customers" : "plants";
   render();
 }
 
 function openViewer(source, index = 0) {
-  const item = source.kind === "plant" ? findPlant(source.id) : findAlbum(source.id);
+  const item = source.kind === "plant" ? findPlant(source.id) : source.kind === "moment" ? findMoment(source.id) : findAlbum(source.id);
   if (!item?.photos?.length) return;
   state.viewer = source;
   state.viewerIndex = Math.max(0, Math.min(index, item.photos.length - 1));
@@ -1462,7 +1764,7 @@ function openViewer(source, index = 0) {
 
 function viewerItem() {
   if (!state.viewer) return null;
-  return state.viewer.kind === "plant" ? findPlant(state.viewer.id) : findAlbum(state.viewer.id);
+  return state.viewer.kind === "plant" ? findPlant(state.viewer.id) : state.viewer.kind === "moment" ? findMoment(state.viewer.id) : findAlbum(state.viewer.id);
 }
 
 function updateViewer() {
@@ -1556,7 +1858,7 @@ async function shareViewerPhoto() {
 }
 
 function openCategoryEditor(name) {
-  if (!name || name === "all") return;
+  if (!name) return;
   state.editing = { kind: "category", name };
   state.addOpen = false;
   state.detail = null;
@@ -1617,7 +1919,7 @@ function bind() {
   document.addEventListener("pointerdown", (event) => {
     const category = event.target.closest("[data-category]");
     const name = category?.dataset.category;
-    if (!category || !name || name === "all") return;
+    if (!category || !name) return;
     categoryHoldOpened = false;
     clearCategoryHold();
     categoryHoldTimer = setTimeout(() => {
@@ -1631,7 +1933,7 @@ function bind() {
   document.addEventListener("contextmenu", (event) => {
     const category = event.target.closest("[data-category]");
     const name = category?.dataset.category;
-    if (!category || !name || name === "all") return;
+    if (!category || !name) return;
     event.preventDefault();
     openCategoryEditor(name);
   });
@@ -1644,6 +1946,12 @@ function bind() {
     }
     const choice = event.target.closest("[data-add-choice]");
     if (choice) return openAdd(choice.dataset.addChoice);
+    const quick = event.target.closest("[data-quick-add]");
+    if (quick) return openAdd(quick.dataset.quickAdd || quickAddKind());
+    const emptyAdd = event.target.closest("[data-empty-add]");
+    if (emptyAdd) return openAdd(emptyAdd.dataset.emptyAdd);
+    const jump = event.target.closest("[data-view-jump]");
+    if (jump) { state.view = jump.dataset.viewJump; render(); return; }
 
     const category = event.target.closest("[data-category]");
     if (category) {
@@ -1669,6 +1977,12 @@ function bind() {
       return;
     }
     const editCustomer = event.target.closest("[data-edit-customer]");
+    const editMoment = event.target.closest("[data-edit-moment]");
+    if (editMoment) {
+      state.editing = { kind: "moment", id: editMoment.dataset.editMoment };
+      render();
+      return;
+    }
     if (editCustomer) {
       state.editing = { kind: "customer", id: editCustomer.dataset.editCustomer };
       render();
@@ -1682,6 +1996,8 @@ function bind() {
     }
     const openAlbum = event.target.closest("[data-open-album]");
     if (openAlbum) return openViewer({ kind: "album", id: openAlbum.dataset.openAlbum }, 0);
+    const openMomentPhoto = event.target.closest("[data-open-moment-photo]");
+    if (openMomentPhoto) return openViewer({ kind: "moment", id: openMomentPhoto.dataset.openMomentPhoto }, 0);
     const photoOpen = event.target.closest("[data-photo-open]");
     if (photoOpen && state.detail) return openViewer(state.detail, Number(photoOpen.dataset.photoOpen || 0));
     if (event.target.closest("[data-detail-close]")) {
@@ -1766,6 +2082,7 @@ function bind() {
     }
     if (event.target.name === "language") {
       state.data.settings.language = form.elements.language.value || "en";
+      localizeDemoPlants(state.data.plants, state.data.settings.language);
       render();
     }
   });
@@ -1840,6 +2157,14 @@ function init() {
 }
 
 init();
+
+
+
+
+
+
+
+
 
 
 

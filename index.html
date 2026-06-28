@@ -45,7 +45,6 @@
         <img src="assets/app-logo.png" alt="">
       </div>
       <div class="brand-copy">
-        <p id="appSubtitle">Private collection</p>
         <h1 id="appTitle">My Plant Collection</h1>
       </div>
     </header>
@@ -65,8 +64,10 @@
       <section class="card-grid" id="cardGrid"></section>
       <section class="album-grid" id="albumGrid" hidden></section>
       <section class="customer-list" id="customerList" hidden></section>
+      <section class="moment-list" id="momentList" hidden></section>
       <section class="settings-panel" id="settingsPanel" hidden></section>
       <section class="empty-state" id="emptyState" hidden>Nothing here yet.</section>
+      <button class="quick-add" id="quickAdd" type="button" hidden></button>
     </main>
 
     <section class="add-sheet" id="addSheet" hidden>
@@ -79,6 +80,7 @@
         <button type="button" data-add-choice="plant"><span class="add-menu-icon">&#127807;</span><strong>New plant</strong></button>
         <button type="button" data-add-choice="seedling" data-seedling-choice><span class="add-menu-icon">&#127793;</span><strong>New seedling</strong></button>
         <button type="button" data-add-choice="album" data-gallery-choice><span class="add-menu-icon">&#128444;&#65039;</span><strong>New album</strong></button>
+        <button type="button" data-add-choice="moment" data-moment-choice><span class="add-menu-icon">&#128247;</span><strong>Capture moment</strong></button>
         <button type="button" data-add-choice="customer" data-customer-choice><span class="add-menu-icon">&#128100;</span><strong>New customer</strong></button>
         <button type="button" data-add-choice="category"><span class="add-menu-icon">+</span><strong>New category</strong></button>
       </div>
@@ -88,9 +90,10 @@
       <button class="active" type="button" data-view="plants"><span class="dock-icon">&#127807;</span><span>Plants</span></button>
       <button type="button" data-view="seedlings" data-seedling-nav><span class="dock-icon">&#127793;</span><span>Seedlings</span></button>
       <button type="button" data-view="gallery" data-gallery-nav><span class="dock-icon">&#128444;&#65039;</span><span>Gallery</span></button>
+      <button type="button" data-view="moments" data-moment-nav><span class="dock-icon">&#128247;</span><span>Moments</span></button>
       <button type="button" data-view="customers" data-customer-nav><span class="dock-icon">&#128100;</span><span>Customers</span></button>
-      <button type="button" data-view="settings"><span class="dock-icon">&#9881;&#65039;</span><span>Settings</span></button>
       <button type="button" data-add-main><span class="dock-icon">+</span><span>Add</span></button>
+      <button type="button" data-view="settings"><span class="dock-icon">&#9881;&#65039;</span><span>Settings</span></button>
     </nav>
   </div>
 
@@ -115,6 +118,7 @@
   <script src="app.js"></script>
 </body>
 </html>
+
 
 
 
