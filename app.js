@@ -29,19 +29,9 @@ const defaults = {
     showSeedlings: true,
     showCustomers: false,
     showAllCategory: true,
+    onboardingDone: false,
   },
-  plants: [
-    {
-      id: "demo-1",
-      type: "plant",
-      name: "Demo plant",
-      category: "Coleus",
-      price: "",
-      note: "A short plant note can be here.",
-      photos: [],
-      seed: true,
-    },
-  ],
+  plants: [],
   albums: [],
   moments: [],
   customers: [],
@@ -528,6 +518,19 @@ const FORM_TEXT = {
     memoryToday: "Wspomnienie z dziś",
   },
 };
+Object.assign(FORM_TEXT.cs, {
+  relatedPlant: "Patří k rostlině", noPlant: "Bez přiřazení", relatedCategory: "Patří do kategorie", noCategory: "Bez kategorie", plantStory: "Příběh rostliny", noPlantStory: "Zatím tu nejsou žádné momenty.", saved: "Uloženo", firstPlantJoy: "První rostlina je doma", tenPlantsJoy: "Tvoje sbírka krásně roste", pieces: "ks",
+});
+Object.assign(FORM_TEXT.sk, {
+  relatedPlant: "Patrí k rastline", noPlant: "Bez priradenia", relatedCategory: "Patrí do kategórie", noCategory: "Bez kategórie", plantStory: "Príbeh rastliny", noPlantStory: "Zatiaľ tu nie sú žiadne momenty.", saved: "Uložené", firstPlantJoy: "Prvá rastlina je doma", tenPlantsJoy: "Tvoja zbierka krásne rastie", pieces: "ks",
+});
+Object.assign(FORM_TEXT.en, {
+  relatedPlant: "Belongs to plant", noPlant: "No plant", relatedCategory: "Belongs to category", noCategory: "No category", plantStory: "Plant story", noPlantStory: "No moments here yet.", saved: "Saved", firstPlantJoy: "First plant is home", tenPlantsJoy: "Your collection is growing beautifully", pieces: "pcs",
+});
+Object.assign(FORM_TEXT.pl, {
+  relatedPlant: "Przypisz do rośliny", noPlant: "Bez przypisania", relatedCategory: "Przypisz do kategorii", noCategory: "Bez kategorii", plantStory: "Historia rośliny", noPlantStory: "Nie ma jeszcze żadnych momentów.", saved: "Zapisano", firstPlantJoy: "Pierwsza roślina jest w domu", tenPlantsJoy: "Twoja kolekcja pięknie rośnie", pieces: "szt.",
+});
+
 let storageWrite = Promise.resolve();
 let storageErrorShown = false;
 
@@ -552,6 +555,10 @@ const state = {
   viewerLongPressFired: false,
   unlocked: false,
   momentSlideTimer: null,
+  lastEditingKey: "",
+  backGuardReady: false,
+  wizardOpen: false,
+  wizardStep: 0,
   license: null,
   deviceId: "",
   data: structuredClone(defaults),
@@ -585,6 +592,8 @@ const els = {
   lockError: $("#lockError"),
   copyDeviceId: $("#copyDeviceId"),
   licenseNote: $("#licenseNote"),
+  wizard: $("#wizard"),
+  wizardContent: $("#wizardContent"),
 };
 
 function clone(value) {
@@ -710,6 +719,55 @@ function ft(key, values = {}) {
   return String(raw).replace(/\{(\w+)\}/g, (_, name) => values[name] ?? "");
 }
 
+const WIZARD_TEXT = {
+  cs: {
+    runWizard: "Spustit průvodce znovu", welcome: "Vítej", intro: "Nastav si sbírku tak, aby seděla tomu, co opravdu pěstuješ.", next: "Pokračovat", back: "Zpět", finish: "Hotovo",
+    languageTitle: "Jazyk a měna", nameTitle: "Název appky", nameHint: "Tento název uvidíš v hlavičce aplikace.", lookTitle: "Vzhled", sectionsTitle: "Co chceš používat", startTitle: "Můžeš začít", startText: "Přidej první rostlinu nebo si vytvoř první kategorii.", addPlant: "Přidat první rostlinu", createCategory: "Vytvořit kategorii",
+  },
+  sk: {
+    runWizard: "Spustiť sprievodcu znova", welcome: "Vitaj", intro: "Nastav si zbierku tak, aby sedela tomu, čo naozaj pestuješ.", next: "Pokračovať", back: "Späť", finish: "Hotovo",
+    languageTitle: "Jazyk a mena", nameTitle: "Názov appky", nameHint: "Tento názov uvidíš v hlavičke aplikácie.", lookTitle: "Vzhľad", sectionsTitle: "Čo chceš používať", startTitle: "Môžeš začať", startText: "Pridaj prvú rastlinu alebo si vytvor prvú kategóriu.", addPlant: "Pridať prvú rastlinu", createCategory: "Vytvoriť kategóriu",
+  },
+  en: {
+    runWizard: "Run welcome guide again", welcome: "Welcome", intro: "Set up your collection around what you actually grow.", next: "Continue", back: "Back", finish: "Done",
+    languageTitle: "Language and currency", nameTitle: "App name", nameHint: "This name appears in the app header.", lookTitle: "Look and feel", sectionsTitle: "Choose what to use", startTitle: "Ready to start", startText: "Add your first plant or create your first category.", addPlant: "Add first plant", createCategory: "Create category",
+  },
+  pl: {
+    runWizard: "Uruchom przewodnik ponownie", welcome: "Witaj", intro: "Ustaw kolekcję pod to, co naprawdę uprawiasz.", next: "Dalej", back: "Wstecz", finish: "Gotowe",
+    languageTitle: "Język i waluta", nameTitle: "Nazwa aplikacji", nameHint: "Ta nazwa będzie widoczna w nagłówku aplikacji.", lookTitle: "Wygląd", sectionsTitle: "Co chcesz używać", startTitle: "Możesz zaczynać", startText: "Dodaj pierwszą roślinę albo utwórz pierwszą kategorię.", addPlant: "Dodaj pierwszą roślinę", createCategory: "Utwórz kategorię",
+  },
+};
+
+Object.assign(WIZARD_TEXT.cs, { templatesTitle: "Rychlý start podle toho, co pěstuješ", templateIndoor: "Izbové rostliny", templateGarden: "Zahrada", templateColeus: "Coleusy", templateBegonia: "Begónie", templateCactus: "Kaktusy", templateCustom: "Vlastní", templateApplied: "Šablona připravena" });
+Object.assign(WIZARD_TEXT.sk, { templatesTitle: "Rýchly štart podľa toho, čo pestuješ", templateIndoor: "Izbové rastliny", templateGarden: "Záhrada", templateColeus: "Coleusy", templateBegonia: "Begónie", templateCactus: "Kaktusy", templateCustom: "Vlastné", templateApplied: "Šablóna pripravená" });
+Object.assign(WIZARD_TEXT.en, { templatesTitle: "Quick start for what you grow", templateIndoor: "Houseplants", templateGarden: "Garden", templateColeus: "Coleus", templateBegonia: "Begonias", templateCactus: "Cacti", templateCustom: "Custom", templateApplied: "Template ready" });
+Object.assign(WIZARD_TEXT.pl, { templatesTitle: "Szybki start pod to, co uprawiasz", templateIndoor: "Rośliny domowe", templateGarden: "Ogród", templateColeus: "Koleusy", templateBegonia: "Begonie", templateCactus: "Kaktusy", templateCustom: "Własne", templateApplied: "Szablon gotowy" });
+
+const CATEGORY_TEMPLATES = {
+  indoor: { labels: ["Izbové rastliny", "Begónie", "Orchideje", "Fikusy"], icons: ["icon-03.png", "icon-01.png", "icon-09.png", "icon-24.png"] },
+  garden: { labels: ["Záhrada", "Jiřiny", "Rajčata", "Bylinky"], icons: ["icon-15.png", "icon-25.png", "icon-21.png", "icon-19.png"] },
+  coleus: { labels: ["Coleusy"], icons: ["icon-10.png"] },
+  begonia: { labels: ["Begónie"], icons: ["icon-05.png"] },
+  cactus: { labels: ["Kaktusy", "Sukulenty"], icons: ["icon-02.png", "icon-07.png"] },
+  custom: { labels: ["Plants"], icons: ["icon-15.png"] },
+};
+
+function applyCategoryTemplate(key) {
+  const preset = CATEGORY_TEMPLATES[key];
+  if (!preset) return;
+  state.data.settings.categories = cleanCategories(preset.labels).filter((category) => category !== SEEDLING_CATEGORY);
+  state.data.settings.categoryIcons = state.data.settings.categoryIcons || {};
+  preset.labels.forEach((label, index) => {
+    const icon = preset.icons[index] ? `assets/category-icons-final/${preset.icons[index]}` : DEFAULT_CATEGORY_ICON;
+    state.data.settings.categoryIcons[label] = icon;
+  });
+  state.category = state.data.settings.categories[0] || "all";
+}
+function wt(key) {
+  const lang = state.data?.settings?.language || "en";
+  return WIZARD_TEXT[lang]?.[key] || WIZARD_TEXT.en[key] || key;
+}
+
 function isImageIcon(value) {
   return CATEGORY_ICONS.includes(value);
 }
@@ -833,15 +891,6 @@ async function writeStoredState(data) {
   }
 }
 
-function localizeDemoPlants(plants, language) {
-  const demoNames = { cs: "Ukázková rostlina", sk: "Ukážková rastlina", en: "Demo plant", pl: "Roślina przykładowa" };
-  const oldDemoNames = new Set(["Ukázková rostlina", "Ukazková rostlina", "Ukážková rastlina", "Ukazkova rastlina", "Demo plant", "Roślina przykładowa"]);
-  plants.forEach((item) => {
-    if ((item.id === "demo-1" || item.seed === true) && oldDemoNames.has(String(item.name || ""))) {
-      item.name = demoNames[language] || demoNames.en;
-    }
-  });
-}
 function normalizeData(data) {
   const merged = {
     settings: { ...defaults.settings, ...(data?.settings || {}) },
@@ -863,8 +912,7 @@ function normalizeData(data) {
   merged.settings.showSeedlings = merged.settings.showSeedlings !== false;
   merged.settings.showAllCategory = merged.settings.showAllCategory !== false;
   merged.settings.categories = merged.settings.categories.filter((category) => category !== SEEDLING_CATEGORY);
-  localizeDemoPlants(merged.plants, merged.settings.language || "en");
-  merged.plants = merged.plants.map((item) => ({
+  merged.plants = merged.plants.filter((item) => item.id !== "demo-1").map((item) => ({
     ...item,
     type: "plant",
     seedling: item.seedling === true || item.seed === true || item.category === SEEDLING_CATEGORY,
@@ -872,6 +920,7 @@ function normalizeData(data) {
     photos: Array.isArray(item.photos) ? item.photos : [],
   }));
   merged.albums = merged.albums.map((item) => ({ ...item, type: "album", photos: Array.isArray(item.photos) ? item.photos : [] }));
+  merged.moments = merged.moments.map((item) => ({ ...item, type: "moment", plantId: item.plantId || "", category: item.category || "", photos: Array.isArray(item.photos) ? item.photos : [] }));
   merged.customers = merged.customers.map((item) => ({ ...item, type: "customer", wants: Array.isArray(item.wants) ? item.wants : [], fees: Array.isArray(item.fees) ? item.fees : [] }));
   return merged;
 }
@@ -902,6 +951,21 @@ function showStorageError(error) {
 function save() {
   const data = snapshot();
   storageWrite = storageWrite.catch(() => {}).then(() => writeStoredState(data)).catch(showStorageError);
+}
+
+let toastTimer = null;
+function showToast(message = ft("saved")) {
+  let toast = document.querySelector("#toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "toast";
+    toast.className = "toast";
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 1900);
 }
 
 function cleanCategories(value) {
@@ -960,6 +1024,7 @@ function categoryForm(category = "") {
   const isAll = original === "all";
   const currentIcon = original ? categoryIcon(original) : DEFAULT_CATEGORY_ICON;
   const displayName = isAll ? t("all") : original;
+  const noIconChoice = isAll ? `<label class="icon-choice no-icon"><input type="radio" name="categoryIcon" value="${NO_ICON}" ${currentIcon === "" ? "checked" : ""}><span>Bez ikonky</span></label>` : "";
   const nameField = isAll
     ? `<label>${esc(t("categoryName"))}<input value="${esc(displayName)}" autocomplete="off" readonly></label><input type="hidden" name="name" value="all">`
     : `<label>${esc(t("categoryName"))}<input name="name" value="${esc(original)}" autocomplete="off" required></label>`;
@@ -968,7 +1033,7 @@ function categoryForm(category = "") {
     ${nameField}
     <fieldset class="icon-choice-grid">
       <legend>${esc(t("categoryEmoji"))}</legend>
-      ${CATEGORY_ICONS.map((icon) => `<label class="icon-choice">
+      ${noIconChoice}${CATEGORY_ICONS.map((icon) => `<label class="icon-choice">
         <input type="radio" name="categoryIcon" value="${esc(icon)}" ${icon === currentIcon ? "checked" : ""}>
         <span><img src="${esc(icon)}" alt=""></span>
       </label>`).join("")}
@@ -990,6 +1055,7 @@ function plantForm(item = null, seedling = false) {
     ${state.data.settings.showPrices ? `<label>${esc(ft("price"))}<input name="price" inputmode="decimal" value="${esc(item?.price || "")}" placeholder="${esc(ft("pricePlaceholder"))}"></label>` : ""}
     <label>${esc(ft("note"))}<textarea name="note" rows="3">${esc(item?.note || "")}</textarea></label>
     <label>${esc(ft("photos"))}<input name="photos" type="file" accept="image/*" multiple></label>
+    <div class="photo-preview" data-photo-preview hidden></div>
     ${photoManager(item)}
     <button class="save-pill" type="submit">${esc(ft("save"))}</button>
     ${item ? `<button type="button" class="delete-bottom" data-delete-current>${esc(ft("deletePlant"))}</button>` : ""}
@@ -1002,6 +1068,7 @@ function albumForm(item = null) {
     <label>${esc(ft("name"))}<input name="name" value="${esc(item?.name || "")}" autocomplete="off" required></label>
     <label>${esc(ft("note"))}<textarea name="note" rows="3">${esc(item?.note || "")}</textarea></label>
     <label>${esc(ft("photos"))}<input name="photos" type="file" accept="image/*" multiple></label>
+    <div class="photo-preview" data-photo-preview hidden></div>
     ${photoManager(item)}
     <button class="save-pill" type="submit">${esc(ft("save"))}</button>
     ${item ? `<button type="button" class="delete-bottom" data-delete-current>${esc(ft("deleteAlbum"))}</button>` : ""}
@@ -1013,7 +1080,7 @@ function customerForm(item = null) {
   const feeRows = [...(item?.fees || []), { label: "", price: "" }];
   const plants = [...state.data.plants].sort((a, b) => a.name.localeCompare(b.name, state.data.settings.language || "en"));
   const selectedPlants = [...wants.keys()].map((id) => findPlant(id)).filter(Boolean);
-  const wantedRows = selectedPlants.map((plant) => customerWantedRow(plant, wants.get(plant.id)?.price ?? plant.price ?? "")).join("");
+  const wantedRows = selectedPlants.map((plant) => customerWantedRow(plant, wants.get(plant.id)?.price ?? plant.price ?? "", wants.get(plant.id)?.qty ?? 1)).join("");
   const initialTotal = customerTotal({ wants: [...wants.values()], fees: item?.fees || [] });
   return `<form id="editForm" class="edit-card" data-kind="customer" data-id="${esc(item?.id || "")}">
     <div class="edit-head"><h3>${item ? esc(ft("editCustomer")) : esc(t("newCustomer"))}</h3><button type="button" class="soft-close" data-cancel-edit>&times;</button></div>
@@ -1022,11 +1089,7 @@ function customerForm(item = null) {
     <label>${esc(ft("note"))}<textarea name="note" rows="3">${esc(item?.note || "")}</textarea></label>
     <fieldset class="choice-box">
       <legend>${esc(ft("addPlant"))}</legend>
-      ${plants.length ? `<input name="plantPickerSearch" class="plant-picker-search" autocomplete="off" placeholder="${esc(ft("choosePlant"))}">
-      <select name="plantPicker" class="plant-picker-list" size="${Math.min(8, Math.max(3, plants.length))}">
-        ${plants.map((plant) => `<option value="${esc(plant.id)}" data-search="${esc(norm(`${plant.name} ${plant.category || ""} ${plant.seedling ? t("seedlings") : ""}`))}">${plant.seedling ? `${esc(t("seedlings"))} - ` : ""}${esc(plant.name)}${plant.category ? ` · ${esc(plant.category)}` : ""}</option>`).join("")}
-      </select>
-      <div class="selected-title">${esc(ft("selectedPlants"))}</div>
+      ${plants.length ? `<input name="plantPickerSearch" class="plant-picker-search" autocomplete="off" placeholder="${esc(ft("choosePlant"))}">` + `<div class="plant-picker-list" data-plant-picker-list>${plants.map((plant) => `<button type="button" value="${esc(plant.id)}" data-plant-option="${esc(plant.id)}" data-search="${esc(norm(`${plant.name} ${plant.category || ""} ${plant.seedling ? t("seedlings") : ""}`))}">${plant.seedling ? `${esc(t("seedlings"))} · ` : ""}${esc(plant.name)}${plant.category ? ` · ${esc(plant.category)}` : ""}</button>`).join("")}</div>` + `<div class="selected-title">${esc(ft("selectedPlants"))}</div>
       <div class="wanted-list" data-wanted-list>${wantedRows || `<p class="muted">${esc(ft("noSelectedPlants"))}</p>`}</div>` : `<p class="muted">${esc(ft("addPlantsFirst"))}</p>`}
     </fieldset>
     ${state.data.settings.showPrices ? `<fieldset class="choice-box">
@@ -1042,34 +1105,36 @@ function customerForm(item = null) {
   </form>`;
 }
 
-function customerWantedRow(plant, price = "") {
+function customerWantedRow(plant, price = "", qty = 1) {
+  const safeQty = Math.max(1, Number(qty || 1) || 1);
   return `<div class="wanted-row selected-want" data-want-id="${esc(plant.id)}">
     <input type="hidden" name="want" value="${esc(plant.id)}">
     <span>${plant.seedling ? "\u{1F331} " : ""}${esc(plant.name)}</span>
+    <label class="qty-field"><input name="want-qty-${esc(plant.id)}" inputmode="numeric" value="${esc(safeQty)}" aria-label="${esc(ft("pieces"))}"><em>${esc(ft("pieces"))}</em></label>
     ${state.data.settings.showPrices ? `<input name="want-price-${esc(plant.id)}" inputmode="decimal" value="${esc(price || "")}" placeholder="${esc(currencyLabel())}">` : ""}
     <button type="button" class="mini-remove" data-remove-want="${esc(plant.id)}" aria-label="${esc(ft("remove"))}">&times;</button>
   </div>`;
 }
-
 function selectedCustomerWantIds(form) {
   return new Set([...form.querySelectorAll("[data-want-id]")].map((row) => row.dataset.wantId));
 }
 
 function refreshPlantPicker(form) {
-  const picker = form.querySelector("[name='plantPicker']");
+  const list = form.querySelector("[data-plant-picker-list]");
   const search = form.querySelector("[name='plantPickerSearch']");
-  if (!picker) return;
+  if (!list) return;
   const needle = norm(search?.value || "");
   const selected = selectedCustomerWantIds(form);
-  [...picker.options].forEach((option) => {
-    const matches = !needle || option.dataset.search.includes(needle);
-    option.hidden = !matches || selected.has(option.value);
-    option.disabled = !matches || selected.has(option.value);
+  let visibleCount = 0;
+  [...list.querySelectorAll("[data-plant-option]")].forEach((button) => {
+    const matches = !needle || button.dataset.search.includes(needle);
+    const hidden = !matches || selected.has(button.dataset.plantOption);
+    button.hidden = hidden;
+    button.disabled = hidden;
+    if (!hidden) visibleCount += 1;
   });
-  const first = [...picker.options].find((option) => !option.hidden && !option.disabled);
-  if (first) picker.value = first.value;
+  list.classList.toggle("is-empty", visibleCount === 0);
 }
-
 function addCustomerWant(form, plantId) {
   const plant = findPlant(plantId);
   if (!plant || selectedCustomerWantIds(form).has(plant.id)) return;
@@ -1093,7 +1158,8 @@ function updateCustomerTotal(form) {
   if (!totalEl) return;
   const plantTotal = [...form.querySelectorAll("[data-want-id]")].reduce((sum, row) => {
     const input = form.elements[`want-price-${row.dataset.wantId}`];
-    return sum + numericValue(input?.value);
+    const qty = form.elements[`want-qty-${row.dataset.wantId}`];
+    return sum + (numericValue(input?.value) * Math.max(1, numericValue(qty?.value) || 1));
   }, 0);
   const feeTotal = [...form.querySelectorAll(".fee-row")].reduce((sum, row, index) => {
     const input = form.elements[`fee-price-${index}`];
@@ -1123,6 +1189,16 @@ function findMoment(id) {
   return state.data.moments.find((item) => item.id === id) || null;
 }
 
+function plantOptions(selected = "") {
+  const plants = [...(state.data.plants || [])].sort((a, b) => a.name.localeCompare(b.name, "cs"));
+  return `<option value="">${esc(ft("noPlant"))}</option>${plants.map((item) => `<option value="${esc(item.id)}" ${selected === item.id ? "selected" : ""}>${esc(item.name)}</option>`).join("")}`;
+}
+
+function momentsForPlant(plantId) {
+  return [...(state.data.moments || [])]
+    .filter((item) => item.plantId === plantId)
+    .sort((a, b) => String(b.date || b.createdAt || "").localeCompare(String(a.date || a.createdAt || "")));
+}
 function activeMoments() {
   const needle = norm(state.search);
   return [...(state.data.moments || [])]
@@ -1142,11 +1218,14 @@ function momentForm(item = null) {
   return `<form id="editForm" class="edit-card" data-kind="moment" data-id="${esc(item?.id || "")}">
     <div class="edit-head"><h3>${item ? esc(ft("editMoment")) : esc(t("newMoment"))}</h3><button type="button" class="soft-close" data-cancel-edit>&times;</button></div>
     <label>${esc(ft("momentDate"))}<input name="date" type="date" value="${esc(dateValue)}"></label>
+        <label>${esc(ft("relatedPlant"))}<select name="plantId">${plantOptions(item?.plantId || "")}</select></label>
+    <label>${esc(ft("relatedCategory"))}<select name="momentCategory">${categoryOptions(item?.category || "")}</select></label>
     <label>${esc(ft("momentText"))}<textarea name="note" rows="3" placeholder="${esc(ft("momentTextPlaceholder"))}">${esc(item?.note || "")}</textarea></label>
     <div class="moment-photo-actions">
-      <label><span>${esc(ft("capturePhoto"))}</span><input name="cameraPhoto" type="file" accept="image/*" capture="environment"></label>
-      <label><span>${esc(ft("choosePhoto"))}</span><input name="photos" type="file" accept="image/*" multiple></label>
+      <label class="photo-pick-card"><input name="cameraPhoto" type="file" accept="image/*" capture="environment"><span class="photo-pick-icon">📷</span><strong>${esc(ft("capturePhoto"))}</strong></label>
+      <label class="photo-pick-card"><input name="photos" type="file" accept="image/*" multiple><span class="photo-pick-icon">📁</span><strong>${esc(ft("choosePhoto"))}</strong></label>
     </div>
+    <div class="photo-preview moment-preview" data-photo-preview hidden></div>
     ${photoManager(item)}
     <button class="save-pill" type="submit">${esc(ft("save"))}</button>
     ${item ? `<button type="button" class="delete-bottom" data-delete-current>${esc(ft("deleteMoment"))}</button>` : ""}
@@ -1155,11 +1234,14 @@ function momentForm(item = null) {
 
 function momentCard(item, compact = false) {
   const hasPhoto = item.photos?.[0];
+  const linkedPlant = item.plantId ? findPlant(item.plantId) : null;
+  const linkedCategory = item.category || "";
   return `<article class="moment-card ${compact ? "compact" : ""}">
     <button class="moment-photo" type="button" ${hasPhoto ? `data-open-moment-photo="${esc(item.id)}"` : `data-edit-moment="${esc(item.id)}"`}>${photo(hasPhoto, item.note || t("moments"))}</button>
     <div class="moment-body">
       <time>${esc(formatDate(item.date || item.createdAt))}</time>
       ${item.note ? `<p>${esc(item.note)}</p>` : `<p class="muted">${esc(t("newMoment"))}</p>`}
+      ${linkedPlant ? `<span class="moment-plant-pill">${esc(linkedPlant.name)}</span>` : ""}${linkedCategory ? `<span class="moment-plant-pill">${esc(linkedCategory)}</span>` : ""}
     </div>
     <button class="card-edit" type="button" data-edit-moment="${esc(item.id)}">&#9998;</button>
   </article>`;
@@ -1174,23 +1256,35 @@ function sameMonthDay(a, b) {
 }
 
 function momentHero(moments) {
-  if (!moments.length) return "";
+  const withPhotos = moments.filter((item) => Array.isArray(item.photos) && item.photos.length);
+  if (!withPhotos.length) return "";
   const today = new Date();
-  const anniversary = moments.find((item) => {
+  const anniversary = withPhotos.find((item) => {
     const d = new Date(item.date || item.createdAt || "");
     return !Number.isNaN(d.getTime()) && d.getFullYear() < today.getFullYear() && sameMonthDay(d, today);
   });
-  const item = anniversary || moments[0];
-  const src = item.photos?.[0] || "";
-  const title = anniversary ? ft("memoryToday") : ft("latestMoments");
-  return `<section class="moment-hero">
-    <button type="button" class="moment-hero-photo" ${src ? `data-open-moment-photo="${esc(item.id)}"` : `data-edit-moment="${esc(item.id)}"`}>${photo(src, item.note || t("moments"))}</button>
-    <div class="moment-hero-body">
-      <span>${esc(title)}</span>
-      <h3>${esc(formatDate(item.date || item.createdAt))}</h3>
-      ${item.note ? `<p>${esc(item.note)}</p>` : `<p>${esc(t("newMoment"))}</p>`}
-      <button type="button" data-edit-moment="${esc(item.id)}">${esc(ft("edit"))}</button>
-    </div>
+  const seen = new Set();
+  const orderedMoments = [anniversary, ...withPhotos].filter(Boolean).filter((item) => {
+    if (seen.has(item.id)) return false;
+    seen.add(item.id);
+    return true;
+  });
+  const slides = orderedMoments.flatMap((item) => (item.photos || []).map((src, photoIndex) => ({ item, src, photoIndex }))).slice(0, 10);
+  return `<section class="moment-hero moment-hero-slideshow" data-moment-hero>
+    ${slides.map((slide, index) => {
+      const item = slide.item;
+      const title = anniversary?.id === item.id ? ft("memoryToday") : ft("latestMoments");
+      return `<article class="moment-hero-slide ${index === 0 ? "active" : ""}" data-moment-slide>
+        <button type="button" class="moment-hero-photo" data-open-moment-photo="${esc(item.id)}" data-photo-index="${slide.photoIndex}">${photo(slide.src, item.note || t("moments"))}</button>
+        <div class="moment-hero-body">
+          <span>${esc(title)}</span>
+          <h3>${esc(formatDate(item.date || item.createdAt))}</h3>
+          ${item.note ? `<p>${esc(item.note)}</p>` : `<p>${esc(t("newMoment"))}</p>`}
+          <button type="button" data-edit-moment="${esc(item.id)}">${esc(ft("edit"))}</button>
+        </div>
+      </article>`;
+    }).join("")}
+    ${slides.length > 1 ? `<div class="moment-hero-dots">${slides.map((_, index) => `<i class="${index === 0 ? "active" : ""}" data-moment-dot></i>`).join("")}</div>` : ""}
   </section>`;
 }
 function recentMomentsBlock() {
@@ -1246,13 +1340,13 @@ function albumCard(item) {
 function customerTotal(customer) {
   const wants = customer.wants || [];
   const plants = new Map(state.data.plants.map((item) => [item.id, item]));
-  const plantTotal = wants.reduce((sum, want) => sum + (Number(want.price || plants.get(want.id)?.price || 0) || 0), 0);
+  const plantTotal = wants.reduce((sum, want) => sum + ((Number(want.price || plants.get(want.id)?.price || 0) || 0) * (Number(want.qty || 1) || 1)), 0);
   const feeTotal = (customer.fees || []).reduce((sum, fee) => sum + (Number(fee.price || 0) || 0), 0);
   return plantTotal + feeTotal;
 }
 
 function customerCard(item) {
-  const plantNames = (item.wants || []).map((want) => findPlant(want.id)?.name).filter(Boolean);
+  const plantNames = (item.wants || []).map((want) => { const plant = findPlant(want.id); return plant ? `${plant.name}${Number(want.qty || 1) > 1 ? ` × ${want.qty}` : ""}` : ""; }).filter(Boolean);
   return `<article class="customer-card">
     <div>
       <h3>${esc(item.name)}</h3>
@@ -1266,17 +1360,26 @@ function customerCard(item) {
 
 function plantDetail(item) {
   const thumbs = (item.photos || []).map((src, index) => `<button type="button" data-photo-open="${index}"><img src="${esc(src)}" alt="${esc(item.name)} ${index + 1}"></button>`).join("");
+  const storyItems = momentsForPlant(item.id);
+  const story = storyItems.map((moment) => {
+    const src = moment.photos?.[0] || "";
+    return `<article class="story-item">
+      <button type="button" class="story-photo" ${src ? `data-open-moment-photo="${esc(moment.id)}"` : `data-edit-moment="${esc(moment.id)}"`}>${photo(src, moment.note || ft("plantStory"))}</button>
+      <div><time>${esc(formatDate(moment.date || moment.createdAt))}</time>${moment.note ? `<p>${esc(moment.note)}</p>` : `<p class="muted">${esc(t("newMoment"))}</p>`}</div>
+      <button class="story-edit" type="button" data-edit-moment="${esc(moment.id)}">&#9998;</button>
+    </article>`;
+  }).join("");
   return `<div class="detail-top"><button class="soft-close" type="button" data-detail-close>&times;</button></div>
-    <button class="detail-hero" type="button" data-photo-open="0">${photo(item.photos?.[0], item.name)}</button>
-    <div class="detail-body">
+    <button class="detail-hero profile-hero" type="button" data-photo-open="0">${photo(item.photos?.[0], item.name)}</button>
+    <div class="detail-body plant-profile">
       <h2>${esc(item.name)}</h2>
       <div class="card-tags detail-tags"><span>${plantTag(item)}</span>${state.data.settings.showPrices && item.price ? `<b>${esc(formatPrice(item.price))}</b>` : ""}</div>
       ${item.note ? `<p class="detail-note">${esc(item.note)}</p>` : ""}
       ${thumbs ? `<div class="detail-thumbs">${thumbs}</div>` : ""}
+      <section class="plant-story"><h3>${esc(ft("plantStory"))}</h3>${story || `<p class="story-empty">${esc(ft("noPlantStory"))}</p>`}</section>
       <button class="detail-edit-bottom" type="button" data-detail-edit>&#9998; ${esc(ft("edit"))}</button>
     </div>`;
 }
-
 function categoryEditorRow(category = "", icon = "") {
   const currentIcon = icon || categoryIcon(category || "Plants");
   return `<div class="category-editor-row" data-category-row>
@@ -1315,7 +1418,7 @@ function settingsView() {
       <h3>${esc(t("appIdentity"))}</h3>
       <label>${t("appTitle")}<input name="title" value="${esc(state.data.settings.title)}" autocomplete="off"></label>
     </section>
-    <details class="settings-section" open>
+    <details class="settings-section">
       <summary>${esc(t("appearance"))}</summary>
       <fieldset class="theme-picker">
         <legend>${t("colors")}</legend>
@@ -1347,10 +1450,110 @@ function settingsView() {
       <label class="toggle-row"><span>${t("showCustomers")}</span><input name="showCustomers" type="checkbox" ${state.data.settings.showCustomers ? "checked" : ""}></label>
       <label class="toggle-row"><span>${t("showAllCategory")}</span><input name="showAllCategory" type="checkbox" ${state.data.settings.showAllCategory !== false ? "checked" : ""}></label>
     </details>
+    <button class="soft-action full" type="button" data-open-wizard>${esc(wt("runWizard"))}</button>
     <button class="save-pill" type="submit">${t("saveSettings")}</button>
   </form>`;
 }
 
+function wizardProgress() {
+  return `<div class="wizard-progress">${[0, 1, 2, 3].map((step) => `<i class="${state.wizardStep === step ? "active" : ""}"></i>`).join("")}</div>`;
+}
+
+function wizardNav(last = false) {
+  return `<div class="wizard-nav">
+    ${state.wizardStep > 0 ? `<button type="button" class="soft-action" data-wizard-back>${esc(wt("back"))}</button>` : `<span></span>`}
+    <button type="button" class="save-pill" ${last ? "data-wizard-finish" : "data-wizard-next"}>${esc(last ? wt("finish") : wt("next"))}</button>
+  </div>`;
+}
+
+function wizardView() {
+  const s = state.data.settings;
+  const language = s.language || "en";
+  const currency = CURRENCIES[s.currency] ? s.currency : "EUR";
+  const theme = s.theme || "forest";
+  const mode = ["light", "dark"].includes(s.themeMode) ? s.themeMode : "dark";
+  const title = esc(s.title || "My Plant Collection");
+  if (state.wizardStep === 0) {
+    return `<div class="wizard-head"><img src="assets/app-logo.png" alt=""><button type="button" data-wizard-close>&times;</button></div>
+      ${wizardProgress()}<h2>${esc(wt("welcome"))}</h2><p>${esc(wt("intro"))}</p>
+      <form id="wizardForm" class="wizard-form">
+        <section><h3>${esc(wt("languageTitle"))}</h3><div class="wizard-pills">${[["cs", "CZ"], ["sk", "SK"], ["en", "EN"], ["pl", "PL"]].map(([value, label]) => `<label><input type="radio" name="wizardLanguage" value="${value}" ${language === value ? "checked" : ""}><span>${label}</span></label>`).join("")}</div><div class="wizard-pills">${Object.entries(CURRENCIES).map(([value, item]) => `<label><input type="radio" name="wizardCurrency" value="${value}" ${currency === value ? "checked" : ""}><span>${item.label}</span></label>`).join("")}</div></section>
+        <section><h3>${esc(wt("nameTitle"))}</h3><input name="wizardTitle" value="${title}" autocomplete="off"><p>${esc(wt("nameHint"))}</p></section>
+      </form>${wizardNav()}`;
+  }
+  if (state.wizardStep === 1) {
+    return `<div class="wizard-head"><img src="assets/app-logo.png" alt=""><button type="button" data-wizard-close>&times;</button></div>
+      ${wizardProgress()}<h2>${esc(wt("lookTitle"))}</h2>
+      <form id="wizardForm" class="wizard-form">
+        <div class="theme-picker wizard-theme-grid">${THEMES.map(([value, label, color]) => `<label class="theme-choice"><input type="radio" name="wizardTheme" value="${value}" ${theme === value ? "checked" : ""}><span style="--swatch:${color}"></span><b>${esc(t(label))}</b></label>`).join("")}</div>
+        <div class="wizard-pills">${[["light", t("light")], ["dark", t("dark")]].map(([value, label]) => `<label><input type="radio" name="wizardMode" value="${value}" ${mode === value ? "checked" : ""}><span>${esc(label)}</span></label>`).join("")}</div>
+      </form>${wizardNav()}`;
+  }
+  if (state.wizardStep === 2) {
+    const toggles = [["showPrices", t("showPrices")], ["showGallery", t("showGallery")], ["showMoments", t("showMoments")], ["showSeedlings", t("showSeedlings")], ["showCustomers", t("showCustomers")]];
+    return `<div class="wizard-head"><img src="assets/app-logo.png" alt=""><button type="button" data-wizard-close>&times;</button></div>
+      ${wizardProgress()}<h2>${esc(wt("sectionsTitle"))}</h2>
+      <form id="wizardForm" class="wizard-form wizard-toggles">${toggles.map(([name, label]) => `<label class="toggle-row"><span>${esc(label)}</span><input name="${name}" type="checkbox" ${s[name] ? "checked" : ""}></label>`).join("")}<section class="wizard-template-section"><h3>${esc(wt("templatesTitle"))}</h3><div class="wizard-template-grid">${[["indoor", wt("templateIndoor")], ["garden", wt("templateGarden")], ["coleus", wt("templateColeus")], ["begonia", wt("templateBegonia")], ["cactus", wt("templateCactus")], ["custom", wt("templateCustom")]].map(([key, label]) => `<button type="button" class="${s.categoryTemplate === key ? "active" : ""}" data-category-template="${key}">${esc(label)}</button>`).join("")}</div></section></form>${wizardNav()}`;
+  }
+  return `<div class="wizard-head"><img src="assets/app-logo.png" alt=""><button type="button" data-wizard-close>&times;</button></div>
+    ${wizardProgress()}<h2>${esc(wt("startTitle"))}</h2><p>${esc(wt("startText"))}</p>
+    <div class="wizard-start">
+      <button type="button" class="save-pill" data-wizard-start="plant">${esc(wt("addPlant"))}</button>
+      <button type="button" class="soft-action full" data-wizard-start="category">${esc(wt("createCategory"))}</button>
+    </div>${wizardNav(true)}`;
+}
+
+
+function renderWizard() {
+  if (!els.wizard || !els.wizardContent) return;
+  els.wizard.hidden = !state.wizardOpen;
+  els.wizardContent.innerHTML = state.wizardOpen ? wizardView() : "";
+}
+
+function applyWizardForm() {
+  const form = document.querySelector("#wizardForm");
+  if (!form) return;
+  const s = state.data.settings;
+  if (form.elements.wizardLanguage) {
+    s.language = form.elements.wizardLanguage.value || s.language || "en";
+    s.currency = CURRENCIES[form.elements.wizardCurrency.value] ? form.elements.wizardCurrency.value : s.currency;
+    s.title = form.elements.wizardTitle.value.trim() || "My Plant Collection";
+  }
+  if (form.elements.wizardTheme) {
+    s.theme = form.elements.wizardTheme.value || s.theme || "forest";
+    s.themeMode = ["light", "dark"].includes(form.elements.wizardMode.value) ? form.elements.wizardMode.value : "dark";
+  }
+  ["showPrices", "showGallery", "showMoments", "showSeedlings", "showCustomers"].forEach((name) => {
+    if (form.elements[name]) s[name] = form.elements[name].checked;
+  });
+  applyTheme();
+}
+
+function closeWizardOnly() {
+  applyWizardForm();
+  state.data.settings.onboardingDone = true;
+  state.wizardOpen = false;
+  state.wizardStep = 0;
+  if (els.wizard) els.wizard.hidden = true;
+  if (els.wizardContent) els.wizardContent.innerHTML = "";
+  save();
+}
+
+function finishWizard() {
+  closeWizardOnly();
+  render();
+}
+
+function fitHeaderTitle() {
+  if (!els.title) return;
+  const length = String(els.title.textContent || "").trim().length;
+  let size = "";
+  if (length > 34) size = "1.02rem";
+  else if (length > 27) size = "1.12rem";
+  else if (length > 21) size = "1.26rem";
+  else if (length > 15) size = "1.42rem";
+  els.title.style.fontSize = size;
+}
 function renderCategories() {
   if (state.view !== "plants") {
     els.categoryStrip.innerHTML = "";
@@ -1406,25 +1609,42 @@ function renderQuickAdd() {
   els.quickAdd.dataset.quickAdd = kind;
   els.quickAdd.innerHTML = "<span>+</span><strong>" + esc(quickAddLabel(kind)) + "</strong>";
 }
+function maybeScrollEditIntoView() {
+  const key = state.editing ? `${state.editing.kind}:${state.editing.id || state.editing.name || "new"}` : "";
+  if (!key) {
+    state.lastEditingKey = "";
+    return;
+  }
+  if (state.lastEditingKey === key) return;
+  state.lastEditingKey = key;
+  requestAnimationFrame(() => {
+    if (!els.editPanel.hidden) els.editPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+}
 function startMomentSlideshow() {
   if (state.momentSlideTimer) {
     clearInterval(state.momentSlideTimer);
     state.momentSlideTimer = null;
   }
-  const row = document.querySelector("[data-moment-slideshow]");
-  if (!row || row.children.length < 2) return;
+  const hero = document.querySelector("[data-moment-hero]");
+  const slides = [...document.querySelectorAll("[data-moment-slide]")];
+  const dots = [...document.querySelectorAll("[data-moment-dot]")];
+  if (!hero || slides.length < 2) return;
+  let index = Math.max(0, slides.findIndex((slide) => slide.classList.contains("active")));
+  const show = (next) => {
+    index = (next + slides.length) % slides.length;
+    slides.forEach((slide, slideIndex) => slide.classList.toggle("active", slideIndex === index));
+    dots.forEach((dot, dotIndex) => dot.classList.toggle("active", dotIndex === index));
+  };
   state.momentSlideTimer = setInterval(() => {
-    if (!document.body.contains(row)) {
+    if (!document.body.contains(hero)) {
       clearInterval(state.momentSlideTimer);
       state.momentSlideTimer = null;
       return;
     }
-    const next = row.scrollLeft + Math.max(150, Math.round(row.clientWidth * 0.78));
-    if (next >= row.scrollWidth - row.clientWidth - 8) row.scrollTo({ left: 0, behavior: "smooth" });
-    else row.scrollTo({ left: next, behavior: "smooth" });
-  }, 3600);
+    show(index + 1);
+  }, 2800);
 }
-
 function renderDetail() {
   const item = state.detail?.kind === "plant" ? findPlant(state.detail.id) : null;
   els.detailSheet.hidden = !item;
@@ -1442,6 +1662,7 @@ function render() {
   if (state.category !== "all" && !state.data.settings.categories.includes(state.category)) state.category = state.data.settings.showAllCategory === false ? (state.data.settings.categories[0] || "all") : "all";
   document.body.dataset.view = state.view;
   els.title.textContent = state.data.settings.title || "My Plant Collection";
+  fitHeaderTitle();
   els.search.placeholder = t("search");
   els.empty.innerHTML = emptyStateView();
   applyTheme();
@@ -1459,6 +1680,7 @@ function render() {
 
   els.editPanel.hidden = !state.editing;
   els.editPanel.innerHTML = state.editing ? editForm() : "";
+  maybeScrollEditIntoView();
 
   const plants = activePlants();
   const seedlings = activeSeedlings();
@@ -1499,11 +1721,19 @@ function render() {
   const emptyCount = state.view === "plants" ? plants.length : state.view === "seedlings" ? seedlings.length : state.view === "gallery" ? albums.length : state.view === "moments" ? moments.length : state.view === "customers" ? customers.length : 1;
   els.empty.hidden = emptyCount > 0 || !!state.editing;
   els.addSheet.hidden = !state.addOpen;
+  renderWizard();
   renderQuickAdd();
   renderDetail();
   startMomentSlideshow();
 }
 
+function renderSelectedPhotoPreview(form) {
+  const preview = form?.querySelector("[data-photo-preview]");
+  if (!preview) return;
+  const files = [...(form.elements.cameraPhoto?.files || []), ...(form.elements.photos?.files || [])];
+  preview.hidden = files.length === 0;
+  preview.innerHTML = files.map((file) => `<span><img src="${esc(URL.createObjectURL(file))}" alt=""><b>${esc(file.name)}</b></span>`).join("");
+}
 function readFiles(input) {
   const files = [...(input?.files || [])];
   return Promise.all(files.map(readPhoto));
@@ -1533,6 +1763,7 @@ function compressPhoto(src, resolve) {
 }
 
 async function submitEdit(form) {
+  let saveMessage = ft("saved");
   const kind = form.dataset.kind;
   const id = form.dataset.id || "";
   const fields = form.elements;
@@ -1576,6 +1807,7 @@ async function submitEdit(form) {
 
   if (kind === "plant") {
     let item = findPlant(id);
+    const wasNewPlant = !item;
     if (!item) {
       item = { id: uid("plant"), type: "plant", photos: [] };
       state.data.plants.push(item);
@@ -1587,6 +1819,11 @@ async function submitEdit(form) {
     item.price = fields.price?.value.trim() || "";
     item.note = fields.note?.value.trim() || "";
     item.photos = [...(item.photos || []), ...photos];
+    if (wasNewPlant && !isSeedling) {
+      const count = state.data.plants.filter((plant) => !plant.seedling).length;
+      if (count === 1) saveMessage = ft("firstPlantJoy");
+      if (count === 10) saveMessage = ft("tenPlantsJoy");
+    }
     state.view = isSeedling ? "seedlings" : "plants";
   }
 
@@ -1615,6 +1852,8 @@ async function submitEdit(form) {
       return;
     }
     item.date = fields.date?.value || new Date().toISOString().slice(0, 10);
+    item.plantId = fields.plantId?.value || "";
+    item.category = fields.momentCategory?.value || "";
     item.note = note;
     item.photos = [...(item.photos || []), ...allPhotos];
     state.view = "moments";
@@ -1629,7 +1868,7 @@ async function submitEdit(form) {
     item.name = name;
     item.contact = fields.contact?.value.trim() || "";
     item.note = fields.note?.value.trim() || "";
-    item.wants = [...form.querySelectorAll("[data-want-id]")].map((row) => ({ id: row.dataset.wantId, price: fields[`want-price-${row.dataset.wantId}`]?.value.trim() || "" }));
+    item.wants = [...form.querySelectorAll("[data-want-id]")].map((row) => ({ id: row.dataset.wantId, qty: fields[`want-qty-${row.dataset.wantId}`]?.value.trim() || "1", price: fields[`want-price-${row.dataset.wantId}`]?.value.trim() || "" }));
     item.fees = [...form.querySelectorAll(".fee-row")].map((row, index) => ({ label: fields[`fee-label-${index}`]?.value.trim() || "", price: fields[`fee-price-${index}`]?.value.trim() || "" })).filter((fee) => fee.label || fee.price);
     state.view = "customers";
   }
@@ -1638,6 +1877,7 @@ async function submitEdit(form) {
   state.detailMode = "view";
   save();
   render();
+  showToast(saveMessage);
 }
 
 function submitSettings(form) {
@@ -1647,7 +1887,6 @@ function submitSettings(form) {
   state.data.settings.currency = CURRENCIES[form.elements.currency.value] ? form.elements.currency.value : "EUR";
   state.data.settings.customColor = normalizeHex(form.elements.customColor.value);
   state.data.settings.language = form.elements.language.value || "en";
-      localizeDemoPlants(state.data.plants, state.data.settings.language);
   state.data.settings.showSeedlings = form.elements.showSeedlings.checked;
   state.data.settings.categories = cleanCategories(state.data.settings.categories).filter((category) => category !== SEEDLING_CATEGORY);
   if (!state.data.settings.categories.length) state.data.settings.categories = ["Plants"];
@@ -1668,6 +1907,7 @@ function submitSettings(form) {
   state.addOpen = false;
   save();
   render();
+  showToast(ft("saved"));
 }
 
 function currentEditItem() {
@@ -1910,6 +2150,14 @@ function bind() {
     });
   });
 
+  const quickAddClickHandler = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const kind = els.quickAdd?.dataset.quickAdd || quickAddKind();
+    openAdd(kind);
+  };
+  els.quickAdd?.addEventListener("click", quickAddClickHandler);
+  els.quickAdd?.addEventListener("pointerup", quickAddClickHandler);
   document.querySelector("[data-add-main]").addEventListener("click", () => {
     state.addOpen = true;
     state.editing = null;
@@ -1939,6 +2187,59 @@ function bind() {
   });
 
   document.addEventListener("click", (event) => {
+    if (event.target.closest("[data-open-wizard]")) {
+      state.wizardOpen = true;
+      state.wizardStep = 0;
+      renderWizard();
+      return;
+    }
+    if (event.target.closest("[data-wizard-close]")) {
+      closeWizardOnly();
+      render();
+      return;
+    }
+    if (event.target.closest("[data-wizard-back]")) {
+      applyWizardForm();
+      state.wizardStep = Math.max(0, state.wizardStep - 1);
+      renderWizard();
+      return;
+    }
+    const categoryTemplate = event.target.closest("[data-category-template]");
+    if (categoryTemplate) {
+      applyWizardForm();
+      applyCategoryTemplate(categoryTemplate.dataset.categoryTemplate);
+      save();
+      renderWizard();
+      showToast(wt("templateApplied"));
+      return;
+    }    if (event.target.closest("[data-wizard-next]")) {
+      applyWizardForm();
+      state.wizardStep = Math.min(3, state.wizardStep + 1);
+      renderWizard();
+      return;
+    }
+    if (event.target.closest("[data-wizard-finish]")) {
+      finishWizard();
+      return;
+    }
+    const wizardStart = event.target.closest("[data-wizard-start]");
+    if (wizardStart) {
+      const action = wizardStart.dataset.wizardStart;
+      closeWizardOnly();
+      state.addOpen = false;
+      state.detail = null;
+      state.editing = null;
+      if (action === "plant") {
+        openAdd("plant");
+        return;
+      }
+      if (action === "category") {
+        openAdd("category");
+        return;
+      }
+      render();
+      return;
+    }
     if (event.target.closest("[data-add-close]")) {
       state.addOpen = false;
       render();
@@ -1947,7 +2248,10 @@ function bind() {
     const choice = event.target.closest("[data-add-choice]");
     if (choice) return openAdd(choice.dataset.addChoice);
     const quick = event.target.closest("[data-quick-add]");
-    if (quick) return openAdd(quick.dataset.quickAdd || quickAddKind());
+    if (quick) {
+      event.preventDefault();
+      return openAdd(quick.dataset.quickAdd || quickAddKind());
+    }
     const emptyAdd = event.target.closest("[data-empty-add]");
     if (emptyAdd) return openAdd(emptyAdd.dataset.emptyAdd);
     const jump = event.target.closest("[data-view-jump]");
@@ -1997,7 +2301,7 @@ function bind() {
     const openAlbum = event.target.closest("[data-open-album]");
     if (openAlbum) return openViewer({ kind: "album", id: openAlbum.dataset.openAlbum }, 0);
     const openMomentPhoto = event.target.closest("[data-open-moment-photo]");
-    if (openMomentPhoto) return openViewer({ kind: "moment", id: openMomentPhoto.dataset.openMomentPhoto }, 0);
+    if (openMomentPhoto) return openViewer({ kind: "moment", id: openMomentPhoto.dataset.openMomentPhoto }, Number(openMomentPhoto.dataset.photoIndex || 0));
     const photoOpen = event.target.closest("[data-photo-open]");
     if (photoOpen && state.detail) return openViewer(state.detail, Number(photoOpen.dataset.photoOpen || 0));
     if (event.target.closest("[data-detail-close]")) {
@@ -2016,7 +2320,12 @@ function bind() {
       render();
       return;
     }
-    const removeWant = event.target.closest("[data-remove-want]");
+    const plantOption = event.target.closest("[data-plant-option]");
+    if (plantOption) {
+      const form = plantOption.closest("#editForm");
+      if (form) addCustomerWant(form, plantOption.dataset.plantOption);
+      return;
+    }    const removeWant = event.target.closest("[data-remove-want]");
     if (removeWant) {
       const form = removeWant.closest("#editForm");
       removeWant.closest("[data-want-id]")?.remove();
@@ -2038,6 +2347,13 @@ function bind() {
   });
 
   document.addEventListener("submit", (event) => {
+    if (event.target?.id === "wizardForm") {
+      event.preventDefault();
+      applyWizardForm();
+      state.wizardStep = Math.min(3, state.wizardStep + 1);
+      renderWizard();
+      return;
+    }
     if (event.target?.id === "editForm") {
       event.preventDefault();
       submitEdit(event.target);
@@ -2049,10 +2365,20 @@ function bind() {
   });
 
   document.addEventListener("input", (event) => {
+    if (event.target.closest("#wizardForm")) {
+      applyWizardForm();
+      if (event.target.name === "wizardLanguage") renderWizard();
+      else applyTheme();
+      return;
+    }
     const editFormEl = event.target.closest("#editForm");
+    if (["plant", "album", "moment"].includes(editFormEl?.dataset.kind) && (event.target.name === "photos" || event.target.name === "cameraPhoto")) {
+      renderSelectedPhotoPreview(editFormEl);
+      return;
+    }
     if (editFormEl?.dataset.kind === "customer") {
       if (event.target.name === "plantPickerSearch") refreshPlantPicker(editFormEl);
-      if (event.target.name?.startsWith("want-price-") || event.target.name?.startsWith("fee-price-")) updateCustomerTotal(editFormEl);
+      if (event.target.name?.startsWith("want-price-") || event.target.name?.startsWith("want-qty-") || event.target.name?.startsWith("fee-price-")) updateCustomerTotal(editFormEl);
       return;
     }
     const form = event.target.closest("#settingsForm");
@@ -2066,10 +2392,20 @@ function bind() {
   });
 
   document.addEventListener("change", (event) => {
+    if (event.target.closest("#wizardForm")) {
+      applyWizardForm();
+      if (event.target.name === "wizardLanguage") renderWizard();
+      else applyTheme();
+      return;
+    }
     const editFormEl = event.target.closest("#editForm");
+    if (["plant", "album", "moment"].includes(editFormEl?.dataset.kind) && (event.target.name === "photos" || event.target.name === "cameraPhoto")) {
+      renderSelectedPhotoPreview(editFormEl);
+      return;
+    }
     if (editFormEl?.dataset.kind === "customer") {
       if (event.target.name === "plantPicker") addCustomerWant(editFormEl, event.target.value);
-      if (event.target.name?.startsWith("want-price-") || event.target.name?.startsWith("fee-price-")) updateCustomerTotal(editFormEl);
+      if (event.target.name?.startsWith("want-price-") || event.target.name?.startsWith("want-qty-") || event.target.name?.startsWith("fee-price-")) updateCustomerTotal(editFormEl);
       return;
     }
     const form = event.target.closest("#settingsForm");
@@ -2082,7 +2418,6 @@ function bind() {
     }
     if (event.target.name === "language") {
       state.data.settings.language = form.elements.language.value || "en";
-      localizeDemoPlants(state.data.plants, state.data.settings.language);
       render();
     }
   });
@@ -2144,11 +2479,32 @@ function bind() {
   });
 }
 
+function handleBackStep() {
+  if (state.viewer) { closeViewer(); return true; }
+  if (state.addOpen) { state.addOpen = false; render(); return true; }
+  if (state.detail) { state.detail = null; render(); return true; }
+  if (state.editing) { state.editing = null; render(); return true; }
+  if (state.category !== "all") { state.category = "all"; render(); return true; }
+  if (state.view !== "plants") { state.view = "plants"; state.search = ""; render(); return true; }
+  return true;
+}
+
+function setupBackGuard() {
+  if (state.backGuardReady || !window.history?.pushState) return;
+  state.backGuardReady = true;
+  history.replaceState({ plantApp: true }, "");
+  history.pushState({ plantApp: true, guard: true }, "");
+  window.addEventListener("popstate", () => {
+    handleBackStep();
+    history.pushState({ plantApp: true, guard: true }, "");
+  });
+}
 function init() {
   state.deviceId = getDeviceId();
   state.license = readLicense();
   state.unlocked = !!state.license;
   bind();
+  setupBackGuard();
   renderLock();
   if (state.unlocked) {
     render();
@@ -2157,6 +2513,36 @@ function init() {
 }
 
 init();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
