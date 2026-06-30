@@ -744,24 +744,41 @@ Object.assign(WIZARD_TEXT.en, { templatesTitle: "Quick start for what you grow",
 Object.assign(WIZARD_TEXT.pl, { templatesTitle: "Szybki start pod to, co uprawiasz", templateIndoor: "Rośliny domowe", templateGarden: "Ogród", templateColeus: "Koleusy", templateBegonia: "Begonie", templateCactus: "Kaktusy", templateCustom: "Własne", templateApplied: "Szablon gotowy" });
 
 const CATEGORY_TEMPLATES = {
-  indoor: { labels: ["Izbové rastliny", "Begónie", "Orchideje", "Fikusy"], icons: ["icon-03.png", "icon-01.png", "icon-09.png", "icon-24.png"] },
-  garden: { labels: ["Záhrada", "Jiřiny", "Rajčata", "Bylinky"], icons: ["icon-15.png", "icon-25.png", "icon-21.png", "icon-19.png"] },
-  coleus: { labels: ["Coleusy"], icons: ["icon-10.png"] },
-  begonia: { labels: ["Begónie"], icons: ["icon-05.png"] },
-  cactus: { labels: ["Kaktusy", "Sukulenty"], icons: ["icon-02.png", "icon-07.png"] },
-  custom: { labels: ["Plants"], icons: ["icon-15.png"] },
+  indoor: { icons: ["icon-03.png", "icon-01.png", "icon-09.png", "icon-24.png"], labels: {
+    cs: ["Pokojové rostliny", "Begónie", "Orchideje", "Fikusy"],
+    sk: ["Izbové rastliny", "Begónie", "Orchidey", "Fikusy"],
+    en: ["Houseplants", "Begonias", "Orchids", "Ficus"],
+    pl: ["Rośliny domowe", "Begonie", "Storczyki", "Fikusy"],
+  } },
+  garden: { icons: ["icon-15.png", "icon-25.png", "icon-21.png", "icon-19.png"], labels: {
+    cs: ["Zahrada", "Jiřiny", "Rajčata", "Bylinky"],
+    sk: ["Záhrada", "Georgíny", "Rajčiny", "Bylinky"],
+    en: ["Garden", "Dahlias", "Tomatoes", "Herbs"],
+    pl: ["Ogród", "Dalie", "Pomidory", "Zioła"],
+  } },
+  coleus: { icons: ["icon-10.png"], labels: { cs: ["Coleusy"], sk: ["Coleusy"], en: ["Coleus"], pl: ["Koleusy"] } },
+  begonia: { icons: ["icon-05.png"], labels: { cs: ["Begónie"], sk: ["Begónie"], en: ["Begonias"], pl: ["Begonie"] } },
+  cactus: { icons: ["icon-02.png", "icon-07.png"], labels: { cs: ["Kaktusy", "Sukulenty"], sk: ["Kaktusy", "Sukulenty"], en: ["Cacti", "Succulents"], pl: ["Kaktusy", "Sukulenty"] } },
+  custom: { icons: ["icon-15.png"], labels: { cs: ["Rostliny"], sk: ["Rastliny"], en: ["Plants"], pl: ["Rośliny"] } },
 };
+
+function templateLabels(preset) {
+  const lang = state.data?.settings?.language || "en";
+  return preset.labels?.[lang] || preset.labels?.en || [];
+}
 
 function applyCategoryTemplate(key) {
   const preset = CATEGORY_TEMPLATES[key];
   if (!preset) return;
-  state.data.settings.categories = cleanCategories(preset.labels).filter((category) => category !== SEEDLING_CATEGORY);
+  const labels = templateLabels(preset).filter((category) => category !== SEEDLING_CATEGORY);
+  state.data.settings.categories = cleanCategories([...(state.data.settings.categories || []), ...labels]).filter((category) => category !== SEEDLING_CATEGORY);
   state.data.settings.categoryIcons = state.data.settings.categoryIcons || {};
-  preset.labels.forEach((label, index) => {
+  labels.forEach((label, index) => {
     const icon = preset.icons[index] ? `assets/category-icons-final/${preset.icons[index]}` : DEFAULT_CATEGORY_ICON;
     state.data.settings.categoryIcons[label] = icon;
   });
-  state.category = state.data.settings.categories[0] || "all";
+  state.data.settings.categoryTemplate = key;
+  state.category = labels[0] || state.data.settings.categories[0] || "all";
 }
 function wt(key) {
   const lang = state.data?.settings?.language || "en";
@@ -1199,6 +1216,21 @@ function momentsForPlant(plantId) {
     .filter((item) => item.plantId === plantId)
     .sort((a, b) => String(b.date || b.createdAt || "").localeCompare(String(a.date || a.createdAt || "")));
 }
+
+function plantGalleryPhotos(plant) {
+  if (!plant) return [];
+  const photos = [...(plant.photos || [])];
+  momentsForPlant(plant.id).forEach((moment) => {
+    (moment.photos || []).forEach((src) => {
+      if (src && !photos.includes(src)) photos.push(src);
+    });
+  });
+  return photos;
+}
+
+function itemTitle(item, fallbackKey = "plants") {
+  return item?.name || item?.note || formatDate(item?.date || item?.createdAt) || t(fallbackKey);
+}
 function activeMoments() {
   const needle = norm(state.search);
   return [...(state.data.moments || [])]
@@ -1236,8 +1268,8 @@ function momentCard(item, compact = false) {
   const hasPhoto = item.photos?.[0];
   const linkedPlant = item.plantId ? findPlant(item.plantId) : null;
   const linkedCategory = item.category || "";
-  return `<article class="moment-card ${compact ? "compact" : ""}">
-    <button class="moment-photo" type="button" ${hasPhoto ? `data-open-moment-photo="${esc(item.id)}"` : `data-edit-moment="${esc(item.id)}"`}>${photo(hasPhoto, item.note || t("moments"))}</button>
+  return `<article class="moment-card ${compact ? "compact" : ""}" data-open-moment="${esc(item.id)}">
+    <button class="moment-photo" type="button" ${hasPhoto ? `data-open-moment-photo="${esc(item.id)}"` : `data-open-moment="${esc(item.id)}"`}>${photo(hasPhoto, item.note || t("moments"))}</button>
     <div class="moment-body">
       <time>${esc(formatDate(item.date || item.createdAt))}</time>
       ${item.note ? `<p>${esc(item.note)}</p>` : `<p class="muted">${esc(t("newMoment"))}</p>`}
@@ -1359,7 +1391,8 @@ function customerCard(item) {
 }
 
 function plantDetail(item) {
-  const thumbs = (item.photos || []).map((src, index) => `<button type="button" data-photo-open="${index}"><img src="${esc(src)}" alt="${esc(item.name)} ${index + 1}"></button>`).join("");
+  const galleryPhotos = plantGalleryPhotos(item);
+  const thumbs = galleryPhotos.map((src, index) => `<button type="button" data-photo-open="${index}"><img src="${esc(src)}" alt="${esc(item.name)} ${index + 1}"></button>`).join("");
   const storyItems = momentsForPlant(item.id);
   const story = storyItems.map((moment) => {
     const src = moment.photos?.[0] || "";
@@ -1370,7 +1403,7 @@ function plantDetail(item) {
     </article>`;
   }).join("");
   return `<div class="detail-top"><button class="soft-close" type="button" data-detail-close>&times;</button></div>
-    <button class="detail-hero profile-hero" type="button" data-photo-open="0">${photo(item.photos?.[0], item.name)}</button>
+    <button class="detail-hero profile-hero" type="button" data-photo-open="0">${photo(galleryPhotos[0] || item.photos?.[0], item.name)}</button>
     <div class="detail-body plant-profile">
       <h2>${esc(item.name)}</h2>
       <div class="card-tags detail-tags"><span>${plantTag(item)}</span>${state.data.settings.showPrices && item.price ? `<b>${esc(formatPrice(item.price))}</b>` : ""}</div>
@@ -1378,6 +1411,21 @@ function plantDetail(item) {
       ${thumbs ? `<div class="detail-thumbs">${thumbs}</div>` : ""}
       <section class="plant-story"><h3>${esc(ft("plantStory"))}</h3>${story || `<p class="story-empty">${esc(ft("noPlantStory"))}</p>`}</section>
       <button class="detail-edit-bottom" type="button" data-detail-edit>&#9998; ${esc(ft("edit"))}</button>
+    </div>`;
+}
+function momentDetail(item) {
+  const linkedPlant = item.plantId ? findPlant(item.plantId) : null;
+  const linkedCategory = item.category || "";
+  const title = itemTitle(item, "moments");
+  const thumbs = (item.photos || []).map((src, index) => `<button type="button" data-open-moment-photo="${esc(item.id)}" data-photo-index="${index}"><img src="${esc(src)}" alt="${esc(title)} ${index + 1}"></button>`).join("");
+  return `<div class="detail-top"><button class="soft-close" type="button" data-detail-close>&times;</button></div>
+    ${item.photos?.[0] ? `<button class="detail-hero profile-hero" type="button" data-open-moment-photo="${esc(item.id)}" data-photo-index="0">${photo(item.photos[0], title)}</button>` : ""}
+    <div class="detail-body plant-profile moment-profile">
+      <h2>${esc(title)}</h2>
+      <div class="card-tags detail-tags">${linkedPlant ? `<span>${esc(linkedPlant.name)}</span>` : ""}${linkedCategory ? `<span>${esc(linkedCategory)}</span>` : ""}</div>
+      <p class="detail-note">${esc(formatDate(item.date || item.createdAt))}</p>
+      ${thumbs ? `<div class="detail-thumbs">${thumbs}</div>` : ""}
+      <button class="detail-edit-bottom" type="button" data-edit-moment="${esc(item.id)}">&#9998; ${esc(ft("edit"))}</button>
     </div>`;
 }
 function categoryEditorRow(category = "", icon = "") {
@@ -1646,9 +1694,9 @@ function startMomentSlideshow() {
   }, 2800);
 }
 function renderDetail() {
-  const item = state.detail?.kind === "plant" ? findPlant(state.detail.id) : null;
+  const item = state.detail?.kind === "plant" ? findPlant(state.detail.id) : state.detail?.kind === "moment" ? findMoment(state.detail.id) : null;
   els.detailSheet.hidden = !item;
-  els.detailContent.innerHTML = item ? plantDetail(item) : "";
+  els.detailContent.innerHTML = !item ? "" : state.detail.kind === "moment" ? momentDetail(item) : plantDetail(item);
 }
 
 function render() {
@@ -1994,9 +2042,10 @@ function openAdd(kind) {
 
 function openViewer(source, index = 0) {
   const item = source.kind === "plant" ? findPlant(source.id) : source.kind === "moment" ? findMoment(source.id) : findAlbum(source.id);
-  if (!item?.photos?.length) return;
+  const photos = viewerPhotos(item, source.kind);
+  if (!photos.length) return;
   state.viewer = source;
-  state.viewerIndex = Math.max(0, Math.min(index, item.photos.length - 1));
+  state.viewerIndex = Math.max(0, Math.min(index, photos.length - 1));
   resetViewerZoom();
   updateViewer();
   els.viewer.hidden = false;
@@ -2007,18 +2056,25 @@ function viewerItem() {
   return state.viewer.kind === "plant" ? findPlant(state.viewer.id) : state.viewer.kind === "moment" ? findMoment(state.viewer.id) : findAlbum(state.viewer.id);
 }
 
+function viewerPhotos(item, kind = state.viewer?.kind) {
+  if (!item) return [];
+  return kind === "plant" ? plantGalleryPhotos(item) : (item.photos || []);
+}
+
 function updateViewer() {
   const item = viewerItem();
-  if (!item?.photos?.length) return;
-  els.viewerImage.src = item.photos[state.viewerIndex];
-  els.viewerCaption.textContent = `${item.name} Â· ${state.viewerIndex + 1}/${item.photos.length}`;
+  const photos = viewerPhotos(item);
+  if (!photos.length) return;
+  els.viewerImage.src = photos[state.viewerIndex];
+  els.viewerCaption.textContent = `${itemTitle(item, state.viewer?.kind || "plants")} · ${state.viewerIndex + 1}/${photos.length}`;
 }
 
 function moveViewer(step) {
   const item = viewerItem();
-  if (!item?.photos?.length) return;
+  const photos = viewerPhotos(item);
+  if (!photos.length) return;
   resetViewerZoom();
-  state.viewerIndex = (state.viewerIndex + step + item.photos.length) % item.photos.length;
+  state.viewerIndex = (state.viewerIndex + step + photos.length) % photos.length;
   updateViewer();
 }
 
@@ -2083,13 +2139,14 @@ function safeFileName(name = "rostlina") {
 
 async function shareViewerPhoto() {
   const item = viewerItem();
-  const src = item?.photos?.[state.viewerIndex];
+  const photos = viewerPhotos(item);
+  const src = photos[state.viewerIndex];
   if (!src) return;
   try {
     const blob = src.startsWith("data:") ? dataUrlToBlob(src) : await fetch(src).then((response) => response.blob());
-    const file = new File([blob], safeFileName(`${item.name}-${state.viewerIndex + 1}`), { type: blob.type || "image/jpeg" });
+    const file = new File([blob], safeFileName(`${itemTitle(item)}-${state.viewerIndex + 1}`), { type: blob.type || "image/jpeg" });
     if (navigator.canShare?.({ files: [file] })) {
-      await navigator.share({ title: item.name, files: [file] });
+      await navigator.share({ title: itemTitle(item), files: [file] });
       return;
     }
   } catch (error) {
@@ -2283,6 +2340,8 @@ function bind() {
     const editCustomer = event.target.closest("[data-edit-customer]");
     const editMoment = event.target.closest("[data-edit-moment]");
     if (editMoment) {
+      event.stopPropagation();
+      state.detail = null;
       state.editing = { kind: "moment", id: editMoment.dataset.editMoment };
       render();
       return;
@@ -2295,6 +2354,13 @@ function bind() {
     const openPlant = event.target.closest("[data-open-plant]");
     if (openPlant) {
       state.detail = { kind: "plant", id: openPlant.dataset.openPlant };
+      render();
+      return;
+    }
+    const openMoment = event.target.closest("[data-open-moment]");
+    if (openMoment && !event.target.closest("[data-edit-moment], [data-open-moment-photo]")) {
+      state.detail = { kind: "moment", id: openMoment.dataset.openMoment };
+      state.editing = null;
       render();
       return;
     }
@@ -2513,6 +2579,10 @@ function init() {
 }
 
 init();
+
+
+
+
 
 
 
