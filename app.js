@@ -77,6 +77,7 @@ const TEXT = {
     all: "V\u0161e",
     seedlings: "Semen\u00e1\u010dky",
     search: "Hledat podle n\u00e1zvu...",
+    loadMore: "Zobrazit dal\u0161\u00ed",
     empty: "Nic tu zat\u00edm nen\u00ed.",
     emptyHint: "Přidej první rostlinu do této části.",
     emptyAddPlant: "Přidat rostlinu",
@@ -136,6 +137,7 @@ const TEXT = {
     all: "V\u0161etko",
     seedlings: "Semen\u00e1\u010dky",
     search: "H\u013eada\u0165 pod\u013ea n\u00e1zvu...",
+    loadMore: "Zobrazi\u0165 \u010fal\u0161ie",
     empty: "Zatia\u013e tu ni\u010d nie je.",
     emptyHint: "Pridaj prvú rastlinu do tejto časti.",
     emptyAddPlant: "Pridať rastlinu",
@@ -195,6 +197,7 @@ const TEXT = {
     all: "All",
     seedlings: "Seedlings",
     search: "Search by name...",
+    loadMore: "Show more",
     empty: "Nothing here yet.",
     emptyHint: "Add the first plant to this section.",
     emptyAddPlant: "Add plant",
@@ -234,6 +237,12 @@ const TEXT = {
     newCategory: "New category",
     editCategory: "Edit category",
     deleteCategory: "Delete category",
+    bulkCategoryManager: "Bulk category manager",
+    bulkCategoryHint: "Select multiple categories and delete them at once. Plants from deleted categories move to the first remaining category.",
+    deleteSelectedCategories: "Delete selected categories",
+    selectCategoriesFirst: "Select categories first.",
+    confirmBulkDeleteCategories: "Delete {count} categories?",
+    categoriesDeleted: "Categories deleted: {count}",
     themeForest: "Green",
     themeRose: "Rose",
     themeCream: "Light",
@@ -256,6 +265,7 @@ const TEXT = {
     all: "Wszystko",
     seedlings: "Siewki",
     search: "Szukaj wed\u0142ug nazwy...",
+    loadMore: "Poka\u017c wi\u0119cej",
     empty: "Na razie nic tu nie ma.",
     emptyHint: "Dodaj pierwszą roślinę do tej sekcji.",
     emptyAddPlant: "Dodaj roślinę",
@@ -295,6 +305,12 @@ const TEXT = {
     newCategory: "Nowa kategoria",
     editCategory: "Edytuj kategorię",
     deleteCategory: "Usuń kategorię",
+    bulkCategoryManager: "Zbiorcze zarządzanie kategoriami",
+    bulkCategoryHint: "Zaznacz kilka kategorii i usuń je naraz. Rośliny z usuniętych kategorii zostaną przeniesione do pierwszej pozostałej kategorii.",
+    deleteSelectedCategories: "Usuń wybrane kategorie",
+    selectCategoriesFirst: "Najpierw zaznacz kategorie.",
+    confirmBulkDeleteCategories: "Usunąć {count} kategorii?",
+    categoriesDeleted: "Usunięte kategorie: {count}",
     themeForest: "Zielony",
     themeRose: "R\u00f3\u017cowy",
     themeCream: "Jasny",
@@ -308,6 +324,58 @@ const TEXT = {
     themeDarkGreen: "Ciemnozielony",
   },
 };
+Object.assign(TEXT.cs, {
+  bulkCategoryManager: "Hromadná správa kategorií",
+  bulkCategoryHint: "Označ více kategorií a smaž je najednou. Rostliny z těchto kategorií se přesunou do první zbývající kategorie.",
+  deleteSelectedCategories: "Smazat vybrané kategorie",
+  selectCategoriesFirst: "Nejdřív označ kategorie.",
+  confirmBulkDeleteCategories: "Opravdu smazat {count} kategorií?",
+  categoriesDeleted: "Smazáno kategorií: {count}",
+});
+Object.assign(TEXT.sk, {
+  bulkCategoryManager: "Hromadná správa kategórií",
+  bulkCategoryHint: "Označ viac kategórií a vymaž ich naraz. Rastliny z týchto kategórií sa presunú do prvej zostávajúcej kategórie.",
+  deleteSelectedCategories: "Vymazať vybrané kategórie",
+  selectCategoriesFirst: "Najprv označ kategórie.",
+  confirmBulkDeleteCategories: "Naozaj vymazať {count} kategórií?",
+  categoriesDeleted: "Vymazané kategórie: {count}",
+});
+Object.assign(TEXT.cs, {
+  dashKicker: "Sbírka v obrazech",
+  dashMilestoneEmpty: "Tvoje sbírka čeká na první rostlinu.",
+  dashMilestoneOne: "První rostlina je doma.",
+  dashMilestoneTen: "Tvoje sbírka roste krásně.",
+  dashPhotos: "fotek",
+  dashLatestMoment: "Poslední moment",
+  dashLatestPlant: "Naposledy přidaná"
+});
+Object.assign(TEXT.sk, {
+  dashKicker: "Zbierka v obrazoch",
+  dashMilestoneEmpty: "Tvoja zbierka čaká na prvú rastlinu.",
+  dashMilestoneOne: "Prvá rastlina je doma.",
+  dashMilestoneTen: "Tvoja zbierka rastie krásne.",
+  dashPhotos: "fotiek",
+  dashLatestMoment: "Posledný moment",
+  dashLatestPlant: "Naposledy pridaná"
+});
+Object.assign(TEXT.en, {
+  dashKicker: "Collection in pictures",
+  dashMilestoneEmpty: "Your collection is ready for its first plant.",
+  dashMilestoneOne: "Your first plant is home.",
+  dashMilestoneTen: "Your collection is growing beautifully.",
+  dashPhotos: "photos",
+  dashLatestMoment: "Latest moment",
+  dashLatestPlant: "Latest plant"
+});
+Object.assign(TEXT.pl, {
+  dashKicker: "Kolekcja w obrazach",
+  dashMilestoneEmpty: "Twoja kolekcja czeka na pierwszą roślinę.",
+  dashMilestoneOne: "Pierwsza roślina jest już w domu.",
+  dashMilestoneTen: "Twoja kolekcja pięknie rośnie.",
+  dashPhotos: "zdjęć",
+  dashLatestMoment: "Ostatni moment",
+  dashLatestPlant: "Ostatnio dodana"
+});
 const FORM_TEXT = {
   cs: {
     editPlant: "Upravit rostlinu",
@@ -531,6 +599,8 @@ Object.assign(FORM_TEXT.pl, {
   relatedPlant: "Przypisz do rośliny", noPlant: "Bez przypisania", relatedCategory: "Przypisz do kategorii", noCategory: "Bez kategorii", plantStory: "Historia rośliny", noPlantStory: "Nie ma jeszcze żadnych momentów.", saved: "Zapisano", firstPlantJoy: "Pierwsza roślina jest w domu", tenPlantsJoy: "Twoja kolekcja pięknie rośnie", pieces: "szt.",
 });
 
+const LIST_LIMITS = { plants: 40, seedlings: 40, gallery: 30, moments: 30, customers: 40 };
+
 let storageWrite = Promise.resolve();
 let storageErrorShown = false;
 
@@ -538,6 +608,7 @@ const state = {
   view: "plants",
   category: "all",
   search: "",
+  visibleLimits: { ...LIST_LIMITS },
   addOpen: false,
   editing: null,
   detail: null,
@@ -554,8 +625,7 @@ const state = {
   viewerLongPressTimer: 0,
   viewerLongPressFired: false,
   unlocked: false,
-  momentSlideTimer: null,
-  lastEditingKey: "",
+  momentSlideTimer: null,  lastEditingKey: "",
   backGuardReady: false,
   wizardOpen: false,
   wizardStep: 0,
@@ -708,9 +778,10 @@ function renderLock() {
   }
 }
 
-function t(key) {
+function t(key, values = {}) {
   const lang = state.data?.settings?.language || "en";
-  return TEXT[lang]?.[key] || TEXT.en[key] || key;
+  const raw = TEXT[lang]?.[key] || TEXT.en[key] || key;
+  return String(raw).replace(/\{(\w+)\}/g, (_, name) => values[name] ?? "");
 }
 
 function ft(key, values = {}) {
@@ -738,29 +809,166 @@ const WIZARD_TEXT = {
   },
 };
 
-Object.assign(WIZARD_TEXT.cs, { templatesTitle: "Rychlý start podle toho, co pěstuješ", templateIndoor: "Izbové rostliny", templateGarden: "Zahrada", templateColeus: "Coleusy", templateBegonia: "Begónie", templateCactus: "Kaktusy", templateCustom: "Vlastní", templateApplied: "Šablona připravena" });
+Object.assign(WIZARD_TEXT.cs, { templatesTitle: "Rychlý start podle toho, co pěstuješ", templateIndoor: "Pokojové rostliny", templateGarden: "Zahrada", templateColeus: "Coleusy", templateBegonia: "Begónie", templateCactus: "Kaktusy", templateCustom: "Vlastní", templateApplied: "Šablona připravena" });
 Object.assign(WIZARD_TEXT.sk, { templatesTitle: "Rýchly štart podľa toho, čo pestuješ", templateIndoor: "Izbové rastliny", templateGarden: "Záhrada", templateColeus: "Coleusy", templateBegonia: "Begónie", templateCactus: "Kaktusy", templateCustom: "Vlastné", templateApplied: "Šablóna pripravená" });
 Object.assign(WIZARD_TEXT.en, { templatesTitle: "Quick start for what you grow", templateIndoor: "Houseplants", templateGarden: "Garden", templateColeus: "Coleus", templateBegonia: "Begonias", templateCactus: "Cacti", templateCustom: "Custom", templateApplied: "Template ready" });
 Object.assign(WIZARD_TEXT.pl, { templatesTitle: "Szybki start pod to, co uprawiasz", templateIndoor: "Rośliny domowe", templateGarden: "Ogród", templateColeus: "Koleusy", templateBegonia: "Begonie", templateCactus: "Kaktusy", templateCustom: "Własne", templateApplied: "Szablon gotowy" });
 
-const CATEGORY_TEMPLATES = {
-  indoor: { icons: ["icon-03.png", "icon-01.png", "icon-09.png", "icon-24.png"], labels: {
-    cs: ["Pokojové rostliny", "Begónie", "Orchideje", "Fikusy"],
-    sk: ["Izbové rastliny", "Begónie", "Orchidey", "Fikusy"],
-    en: ["Houseplants", "Begonias", "Orchids", "Ficus"],
-    pl: ["Rośliny domowe", "Begonie", "Storczyki", "Fikusy"],
-  } },
-  garden: { icons: ["icon-15.png", "icon-25.png", "icon-21.png", "icon-19.png"], labels: {
-    cs: ["Zahrada", "Jiřiny", "Rajčata", "Bylinky"],
-    sk: ["Záhrada", "Georgíny", "Rajčiny", "Bylinky"],
-    en: ["Garden", "Dahlias", "Tomatoes", "Herbs"],
-    pl: ["Ogród", "Dalie", "Pomidory", "Zioła"],
-  } },
-  coleus: { icons: ["icon-10.png"], labels: { cs: ["Coleusy"], sk: ["Coleusy"], en: ["Coleus"], pl: ["Koleusy"] } },
-  begonia: { icons: ["icon-05.png"], labels: { cs: ["Begónie"], sk: ["Begónie"], en: ["Begonias"], pl: ["Begonie"] } },
-  cactus: { icons: ["icon-02.png", "icon-07.png"], labels: { cs: ["Kaktusy", "Sukulenty"], sk: ["Kaktusy", "Sukulenty"], en: ["Cacti", "Succulents"], pl: ["Kaktusy", "Sukulenty"] } },
-  custom: { icons: ["icon-15.png"], labels: { cs: ["Rostliny"], sk: ["Rastliny"], en: ["Plants"], pl: ["Rośliny"] } },
+Object.assign(WIZARD_TEXT.cs, {
+  guideTitle: "Co v appce najdeš",
+  guideIntro: "Krátce a jednoduše: každá část má svůj smysl a můžeš si zapnout jen to, co opravdu chceš používat.",
+  guidePlantsTitle: "Rostliny",
+  guidePlantsText: "Tvoje hlavní sbírka. Každá rostlina má název, fotky, kategorii, poznámku a případně cenu.",
+  guideSeedlingsTitle: "Semenáčky",
+  guideSeedlingsText: "Vlastní vypěstované rostliny odděleně od běžné sbírky. Hodí se na pokusy, výsevy a nové kousky.",
+  guideGalleryTitle: "Galerie",
+  guideGalleryText: "Albumy fotek podle sezóny, akce nebo tématu. Sem patří fotky, které nemusí být u jedné konkrétní rostliny.",
+  guideMomentsTitle: "Deník / momenty",
+  guideMomentsText: "Rychlé zachycení okamžiku: nový list, květ, přesazení nebo změna barvy. Moment můžeš propojit s rostlinou.",
+  guideCustomersTitle: "Zákazníci",
+  guideCustomersText: "Volitelná část pro ceny, objednávky, kontakty a přehled toho, kdo co chce.",
+  guideSettingsTitle: "Nastavení",
+  guideSettingsText: "Jazyk, měna, barvy, světlý/tmavý režim a viditelné části appky si může každá nastavit po svém."
+});
+Object.assign(WIZARD_TEXT.sk, {
+  guideTitle: "Čo v appke nájdeš",
+  guideIntro: "Krátko a jednoducho: každá časť má svoj zmysel a môžeš si zapnúť len to, čo naozaj chceš používať.",
+  guidePlantsTitle: "Rastliny",
+  guidePlantsText: "Tvoja hlavná zbierka. Každá rastlina má názov, fotky, kategóriu, poznámku a prípadne cenu.",
+  guideSeedlingsTitle: "Semenáčky",
+  guideSeedlingsText: "Vlastné vypestované rastliny oddelene od bežnej zbierky. Hodí sa na pokusy, výsevy a nové kúsky.",
+  guideGalleryTitle: "Galéria",
+  guideGalleryText: "Albumy fotiek podľa sezóny, akcie alebo témy. Sem patria fotky, ktoré nemusia byť pri jednej konkrétnej rastline.",
+  guideMomentsTitle: "Denník / momenty",
+  guideMomentsText: "Rýchle zachytenie okamihu: nový list, kvet, presadenie alebo zmena farby. Moment môžeš prepojiť s rastlinou.",
+  guideCustomersTitle: "Zákazníci",
+  guideCustomersText: "Voliteľná časť pre ceny, objednávky, kontakty a prehľad toho, kto čo chce.",
+  guideSettingsTitle: "Nastavenia",
+  guideSettingsText: "Jazyk, mena, farby, svetlý/tmavý režim a viditeľné časti appky si môže každá nastaviť po svojom."
+});
+Object.assign(WIZARD_TEXT.en, {
+  guideTitle: "What is inside",
+  guideIntro: "A quick tour: every section has a clear purpose, and you can enable only the parts you actually want.",
+  guidePlantsTitle: "Plants",
+  guidePlantsText: "Your main collection. Each plant can have a name, photos, category, note and optional price.",
+  guideSeedlingsTitle: "Seedlings",
+  guideSeedlingsText: "Your own grown plants, kept separate from the main collection. Great for experiments, sowing and new babies.",
+  guideGalleryTitle: "Gallery",
+  guideGalleryText: "Photo albums by season, event or theme. Use it for photos that do not need to belong to one specific plant.",
+  guideMomentsTitle: "Journal / moments",
+  guideMomentsText: "Capture a quick moment: a new leaf, bloom, repotting or color change. A moment can be linked to a plant.",
+  guideCustomersTitle: "Customers",
+  guideCustomersText: "Optional section for prices, orders, contacts and a clear list of who wants what.",
+  guideSettingsTitle: "Settings",
+  guideSettingsText: "Language, currency, colors, light/dark mode and visible sections can all be personalized."
+});
+Object.assign(WIZARD_TEXT.pl, {
+  guideTitle: "Co znajdziesz w aplikacji",
+  guideIntro: "Krótka prezentacja: każda część ma swój cel, a Ty możesz włączyć tylko to, czego naprawdę chcesz używać.",
+  guidePlantsTitle: "Rośliny",
+  guidePlantsText: "Twoja główna kolekcja. Każda roślina może mieć nazwę, zdjęcia, kategorię, notatkę i opcjonalnie cenę.",
+  guideSeedlingsTitle: "Siewki",
+  guideSeedlingsText: "Własnoręcznie wyhodowane rośliny oddzielone od głównej kolekcji. Dobre do wysiewów, prób i nowych okazów.",
+  guideGalleryTitle: "Galeria",
+  guideGalleryText: "Albumy zdjęć według sezonu, wydarzenia lub tematu. Tu pasują zdjęcia, które nie muszą należeć do jednej rośliny.",
+  guideMomentsTitle: "Dziennik / momenty",
+  guideMomentsText: "Szybkie zapisanie chwili: nowy liść, kwiat, przesadzanie albo zmiana koloru. Moment można połączyć z rośliną.",
+  guideCustomersTitle: "Klienci",
+  guideCustomersText: "Opcjonalna część na ceny, zamówienia, kontakty i przejrzysty zapis, kto czego chce.",
+  guideSettingsTitle: "Ustawienia",
+  guideSettingsText: "Język, waluta, kolory, tryb jasny/ciemny i widoczne części aplikacji można ustawić po swojemu."
+});
+
+Object.assign(WIZARD_TEXT.cs, { templateHint: "Vyber klidně víc možností. Podle toho se ti hned vytvoří startovací kategorie, které můžeš později upravit nebo smazat.", templateSucculent: "Sukulenty", templateOrchid: "Orchideje", templateAroid: "Aroidy", templateVeg: "Zelenina", templateHerbs: "Bylinky", templateBalcony: "Balkón", templateFlowers: "Kvetoucí", templateFruit: "Ovoce", templateApplied: "Startovací kategorie připravené" });
+Object.assign(WIZARD_TEXT.sk, { templateHint: "Vyber pokojne viac možností. Podľa toho sa ti hneď vytvoria štartovacie kategórie, ktoré môžeš neskôr upraviť alebo vymazať.", templateSucculent: "Sukulenty", templateOrchid: "Orchidey", templateAroid: "Aroidy", templateVeg: "Zelenina", templateHerbs: "Bylinky", templateBalcony: "Balkón", templateFlowers: "Kvitnúce", templateFruit: "Ovocie", templateApplied: "Štartovacie kategórie pripravené" });
+Object.assign(WIZARD_TEXT.en, { templateHint: "Choose as many as you want. The app will create starter categories for them, and you can rename or delete them later.", templateSucculent: "Succulents", templateOrchid: "Orchids", templateAroid: "Aroids", templateVeg: "Vegetables", templateHerbs: "Herbs", templateBalcony: "Balcony", templateFlowers: "Flowering", templateFruit: "Fruit", templateApplied: "Starter categories ready" });
+Object.assign(WIZARD_TEXT.pl, { templateHint: "Wybierz tyle opcji, ile chcesz. Aplikacja utworzy z nich kategorie startowe, które możesz później zmienić albo usunąć.", templateSucculent: "Sukulenty", templateOrchid: "Storczyki", templateAroid: "Aroidy", templateVeg: "Warzywa", templateHerbs: "Zioła", templateBalcony: "Balkon", templateFlowers: "Kwitnące", templateFruit: "Owoce", templateApplied: "Kategorie startowe gotowe" });
+Object.assign(WIZARD_TEXT.cs, { customCategoryTitle: "Vlastní kategorie", customCategoryPlaceholder: "např. Fuchsie, Hoyas, Trvalky...", customCategoryAdd: "Přidat vlastní kategorii", customCategoryAdded: "Vlastní kategorie přidaná" });
+Object.assign(WIZARD_TEXT.sk, { customCategoryTitle: "Vlastná kategória", customCategoryPlaceholder: "napr. Fuchsie, Hoje, Trvalky...", customCategoryAdd: "Pridať vlastnú kategóriu", customCategoryAdded: "Vlastná kategória pridaná" });
+Object.assign(WIZARD_TEXT.en, { customCategoryTitle: "Custom category", customCategoryPlaceholder: "e.g. Fuchsias, Hoyas, Perennials...", customCategoryAdd: "Add custom category", customCategoryAdded: "Custom category added" });
+Object.assign(WIZARD_TEXT.pl, { customCategoryTitle: "Własna kategoria", customCategoryPlaceholder: "np. Fuksje, Hoje, Byliny...", customCategoryAdd: "Dodaj własną kategorię", customCategoryAdded: "Własna kategoria dodana" });
+const WIZARD_LAST_STEP = 4;
+
+const STARTER_CATEGORIES = [
+  { key: "coleusy", name: "Coleusy", icon: "assets/category-icons-final/icon-06.png" },
+  { key: "begonie", name: "Begónie", icon: "assets/category-icons-final/icon-05.png" },
+  { key: "orchidey", name: "Orchidey", icon: "assets/category-icons-final/icon-10.png" },
+  { key: "aroidy", name: "Aroidy", icon: "assets/category-icons-final/icon-19.png" },
+  { key: "hoyas", name: "Hoyas", icon: "assets/category-icons-final/icon-04.png" },
+  { key: "fuchsie", name: "Fuchsie", icon: "assets/category-icons-final/icon-25.png" },
+  { key: "kaktusy", name: "Kaktusy", icon: "assets/category-icons-final/icon-02.png" },
+  { key: "sukulenty", name: "Sukulenty", icon: "assets/category-icons-final/icon-08.png" },
+  { key: "masozravky", name: "Mäsožravky", icon: "assets/category-icons-final/icon-07.png" },
+  { key: "bonsaje", name: "Bonsaje", icon: "assets/category-icons-final/icon-14.png" },
+  { key: "teraria", name: "Teráriá", icon: "assets/category-icons-final/icon-11.png" },
+  { key: "akvariove", name: "Akváriové rastliny", icon: "assets/category-icons-final/icon-12.png" },
+  { key: "trvalky", name: "Trvalky", icon: "assets/category-icons-final/icon-15.png" },
+  { key: "georginy", name: "Georgíny", icon: "assets/category-icons-final/icon-54.png" },
+  { key: "ruze", name: "Ruže", icon: "assets/category-icons-final/icon-22.png" },
+  { key: "muskaty", name: "Muškáty", icon: "assets/category-icons-final/icon-09.png" },
+  { key: "rajciny", name: "Rajčiny", icon: "assets/category-icons-final/icon-45.png" },
+  { key: "zelenina", name: "Zelenina", icon: "assets/category-icons-final/icon-43.png" },
+  { key: "bylinky", name: "Bylinky", icon: "assets/category-icons-final/icon-39.png" },
+  { key: "ovocie", name: "Ovocie", icon: "assets/category-icons-final/icon-42.png" },
+  { key: "citrusy", name: "Citrusy", icon: "assets/category-icons-final/icon-18.png" },
+];
+
+const STARTER_CATEGORY_LABELS = {
+  coleusy: { cs: "Coleusy", sk: "Coleusy", en: "Coleus", pl: "Koleusy" },
+  begonie: { cs: "Begonie", sk: "Begónie", en: "Begonias", pl: "Begonie" },
+  orchidey: { cs: "Orchideje", sk: "Orchidey", en: "Orchids", pl: "Storczyki" },
+  aroidy: { cs: "Aroidy", sk: "Aroidy", en: "Aroids", pl: "Aroidy" },
+  hoyas: { cs: "Hoje", sk: "Hoje", en: "Hoyas", pl: "Hoje" },
+  fuchsie: { cs: "Fuchsie", sk: "Fuchsie", en: "Fuchsias", pl: "Fuksje" },
+  kaktusy: { cs: "Kaktusy", sk: "Kaktusy", en: "Cacti", pl: "Kaktusy" },
+  sukulenty: { cs: "Sukulenty", sk: "Sukulenty", en: "Succulents", pl: "Sukulenty" },
+  masozravky: { cs: "Masožravky", sk: "Mäsožravky", en: "Carnivorous plants", pl: "Rośliny mięsożerne" },
+  bonsaje: { cs: "Bonsaje", sk: "Bonsaje", en: "Bonsai", pl: "Bonsai" },
+  teraria: { cs: "Terária", sk: "Teráriá", en: "Terrariums", pl: "Terraria" },
+  akvariove: { cs: "Akvarijní rostliny", sk: "Akváriové rastliny", en: "Aquarium plants", pl: "Rośliny akwariowe" },
+  trvalky: { cs: "Trvalky", sk: "Trvalky", en: "Perennials", pl: "Byliny wieloletnie" },
+  georginy: { cs: "Jiřiny", sk: "Georgíny", en: "Dahlias", pl: "Dalie" },
+  ruze: { cs: "Růže", sk: "Ruže", en: "Roses", pl: "Róże" },
+  muskaty: { cs: "Muškáty", sk: "Muškáty", en: "Geraniums", pl: "Pelargonie" },
+  rajciny: { cs: "Rajčata", sk: "Rajčiny", en: "Tomatoes", pl: "Pomidory" },
+  zelenina: { cs: "Zelenina", sk: "Zelenina", en: "Vegetables", pl: "Warzywa" },
+  bylinky: { cs: "Bylinky", sk: "Bylinky", en: "Herbs", pl: "Zioła" },
+  ovocie: { cs: "Ovoce", sk: "Ovocie", en: "Fruit", pl: "Owoce" },
+  citrusy: { cs: "Citrusy", sk: "Citrusy", en: "Citrus", pl: "Cytrusy" },
 };
+
+function starterCategoryLabel(key, lang = state.data?.settings?.language || "en") {
+  const item = STARTER_CATEGORIES.find((category) => category.key === key);
+  return STARTER_CATEGORY_LABELS[key]?.[lang] || STARTER_CATEGORY_LABELS[key]?.en || item?.name || key;
+}
+
+const CATEGORY_TEMPLATES = Object.fromEntries(STARTER_CATEGORIES.map((item) => [item.key, {
+  icons: [item.icon.replace("assets/category-icons-final/", "")],
+  labels: { cs: [starterCategoryLabel(item.key, "cs")], sk: [starterCategoryLabel(item.key, "sk")], en: [starterCategoryLabel(item.key, "en")], pl: [starterCategoryLabel(item.key, "pl")] },
+}]));
+
+const CATEGORY_TEMPLATE_CHOICES = STARTER_CATEGORIES.map((item) => [item.key, item.name]);
+
+function selectedCategoryTemplates() {
+  const s = state.data?.settings || {};
+  const selected = Array.isArray(s.categoryTemplates) ? [...s.categoryTemplates] : [];
+  if (s.categoryTemplate && !selected.includes(s.categoryTemplate)) selected.push(s.categoryTemplate);
+  return selected.filter((key) => CATEGORY_TEMPLATES[key] || key === "custom");
+}
+
+function toggleCategoryTemplateSelection(key) {
+  if (!CATEGORY_TEMPLATES[key] && key !== "custom") return;
+  const selected = selectedCategoryTemplates();
+  const next = selected.includes(key) ? selected.filter((item) => item !== key) : [...selected, key];
+  state.data.settings.categoryTemplates = next;
+  state.data.settings.categoryTemplate = next[0] || "";
+}
+
+function applySelectedWizardTemplates() {
+  selectedCategoryTemplates().forEach((key) => {
+    if (key !== "custom") applyCategoryTemplate(key);
+  });
+}
 
 function templateLabels(preset) {
   const lang = state.data?.settings?.language || "en";
@@ -777,8 +985,33 @@ function applyCategoryTemplate(key) {
     const icon = preset.icons[index] ? `assets/category-icons-final/${preset.icons[index]}` : DEFAULT_CATEGORY_ICON;
     state.data.settings.categoryIcons[label] = icon;
   });
-  state.data.settings.categoryTemplate = key;
+  const selected = selectedCategoryTemplates();
+  if (!selected.includes(key)) selected.push(key);
+  state.data.settings.categoryTemplates = selected;
+  state.data.settings.categoryTemplate = selected[0] || key;
   state.category = labels[0] || state.data.settings.categories[0] || "all";
+}
+function markCategoryTemplateSelected(key) {
+  const selected = selectedCategoryTemplates();
+  if (!selected.includes(key)) selected.push(key);
+  state.data.settings.categoryTemplates = selected;
+  state.data.settings.categoryTemplate = selected[0] || key;
+}
+
+function unmarkCategoryTemplateSelected(key) {
+  const selected = selectedCategoryTemplates().filter((item) => item !== key);
+  state.data.settings.categoryTemplates = selected;
+  state.data.settings.categoryTemplate = selected[0] || "";
+}
+function applyCustomWizardCategory(name) {
+  const category = String(name || "").trim();
+  if (!category) return false;
+  state.data.settings.categories = cleanCategories([...(state.data.settings.categories || []), category]).filter((item) => item !== SEEDLING_CATEGORY);
+  state.data.settings.categoryIcons = state.data.settings.categoryIcons || {};
+  if (!state.data.settings.categoryIcons[category]) state.data.settings.categoryIcons[category] = DEFAULT_CATEGORY_ICON;
+  markCategoryTemplateSelected("custom");
+  state.category = category;
+  return true;
 }
 function wt(key) {
   const lang = state.data?.settings?.language || "en";
@@ -865,7 +1098,27 @@ function initials(name = "") {
 }
 
 function photo(src, name) {
-  return src ? `<img src="${esc(src)}" alt="${esc(name)}">` : `<span class="placeholder">${esc(initials(name))}</span>`;
+  return src ? `<img src="${esc(src)}" alt="${esc(name)}" loading="lazy" decoding="async">` : `<span class="placeholder">${esc(initials(name))}</span>`;
+}
+
+function defaultLimitForView(view) {
+  return LIST_LIMITS[view] || 40;
+}
+
+function resetVisibleLimit(view = state.view) {
+  if (!state.visibleLimits) state.visibleLimits = { ...LIST_LIMITS };
+  state.visibleLimits[view] = defaultLimitForView(view);
+}
+
+function limitedItems(view, items) {
+  const limit = state.visibleLimits?.[view] || defaultLimitForView(view);
+  return items.slice(0, limit);
+}
+
+function loadMoreButton(view, items) {
+  const limit = state.visibleLimits?.[view] || defaultLimitForView(view);
+  if (items.length <= limit) return "";
+  return `<button type="button" class="load-more" data-load-more="${esc(view)}">${esc(t("loadMore"))}</button>`;
 }
 
 function openDb() {
@@ -1464,7 +1717,7 @@ function settingsView() {
     </section>
     <section class="settings-section">
       <h3>${esc(t("appIdentity"))}</h3>
-      <label>${t("appTitle")}<input name="title" value="${esc(state.data.settings.title)}" autocomplete="off"></label>
+      <input name="title" value="${esc(state.data.settings.title)}" aria-label="${esc(t("appTitle"))}" autocomplete="off">
     </section>
     <details class="settings-section">
       <summary>${esc(t("appearance"))}</summary>
@@ -1498,13 +1751,24 @@ function settingsView() {
       <label class="toggle-row"><span>${t("showCustomers")}</span><input name="showCustomers" type="checkbox" ${state.data.settings.showCustomers ? "checked" : ""}></label>
       <label class="toggle-row"><span>${t("showAllCategory")}</span><input name="showAllCategory" type="checkbox" ${state.data.settings.showAllCategory !== false ? "checked" : ""}></label>
     </details>
+    <details class="settings-section category-bulk-section">
+      <summary>${esc(t("bulkCategoryManager"))}</summary>
+      <p class="settings-hint">${esc(t("bulkCategoryHint"))}</p>
+      <div class="bulk-category-list">
+        ${(state.data.settings.categories || []).map((category) => {
+          const count = state.data.plants.filter((plant) => !plant.seedling && plant.category === category).length;
+          return `<label class="bulk-category-row"><input type="checkbox" name="bulkCategories" value="${esc(category)}"><span>${categoryLabel(category)}</span><b>${count}</b></label>`;
+        }).join("")}
+      </div>
+      <button type="button" class="delete-bottom bulk-delete-button" data-bulk-delete-categories>${esc(t("deleteSelectedCategories"))}</button>
+    </details>
     <button class="soft-action full" type="button" data-open-wizard>${esc(wt("runWizard"))}</button>
     <button class="save-pill" type="submit">${t("saveSettings")}</button>
   </form>`;
 }
 
 function wizardProgress() {
-  return `<div class="wizard-progress">${[0, 1, 2, 3].map((step) => `<i class="${state.wizardStep === step ? "active" : ""}"></i>`).join("")}</div>`;
+  return `<div class="wizard-progress">${Array.from({ length: WIZARD_LAST_STEP + 1 }, (_, step) => `<i class="${state.wizardStep === step ? "active" : ""}"></i>`).join("")}</div>`;
 }
 
 function wizardNav(last = false) {
@@ -1521,36 +1785,50 @@ function wizardView() {
   const theme = s.theme || "forest";
   const mode = ["light", "dark"].includes(s.themeMode) ? s.themeMode : "dark";
   const title = esc(s.title || "My Plant Collection");
+  const head = () => `<div class="wizard-head"><img src="assets/app-logo.png" alt=""><button type="button" data-wizard-close>&times;</button></div>${wizardProgress()}`;
   if (state.wizardStep === 0) {
-    return `<div class="wizard-head"><img src="assets/app-logo.png" alt=""><button type="button" data-wizard-close>&times;</button></div>
-      ${wizardProgress()}<h2>${esc(wt("welcome"))}</h2><p>${esc(wt("intro"))}</p>
+    return `${head()}<h2>${esc(wt("welcome"))}</h2><p>${esc(wt("intro"))}</p>
       <form id="wizardForm" class="wizard-form">
         <section><h3>${esc(wt("languageTitle"))}</h3><div class="wizard-pills">${[["cs", "CZ"], ["sk", "SK"], ["en", "EN"], ["pl", "PL"]].map(([value, label]) => `<label><input type="radio" name="wizardLanguage" value="${value}" ${language === value ? "checked" : ""}><span>${label}</span></label>`).join("")}</div><div class="wizard-pills">${Object.entries(CURRENCIES).map(([value, item]) => `<label><input type="radio" name="wizardCurrency" value="${value}" ${currency === value ? "checked" : ""}><span>${item.label}</span></label>`).join("")}</div></section>
         <section><h3>${esc(wt("nameTitle"))}</h3><input name="wizardTitle" value="${title}" autocomplete="off"><p>${esc(wt("nameHint"))}</p></section>
       </form>${wizardNav()}`;
   }
   if (state.wizardStep === 1) {
-    return `<div class="wizard-head"><img src="assets/app-logo.png" alt=""><button type="button" data-wizard-close>&times;</button></div>
-      ${wizardProgress()}<h2>${esc(wt("lookTitle"))}</h2>
+    const cards = [
+      ["guidePlantsTitle", "guidePlantsText", "plants"],
+      ["guideSeedlingsTitle", "guideSeedlingsText", "seedlings"],
+      ["guideGalleryTitle", "guideGalleryText", "gallery"],
+      ["guideMomentsTitle", "guideMomentsText", "moments"],
+      ["guideCustomersTitle", "guideCustomersText", "customers"],
+      ["guideSettingsTitle", "guideSettingsText", "settings"],
+    ];
+    const iconFor = { plants: "🌿", seedlings: "🌱", gallery: "🖼️", moments: "📷", customers: "👤", settings: "⚙️" };
+    return `${head()}<h2>${esc(wt("guideTitle"))}</h2><p>${esc(wt("guideIntro"))}</p>
+      <div class="wizard-explain-grid">${cards.map(([titleKey, textKey, icon]) => `<article class="wizard-explain-card"><span>${iconFor[icon]}</span><div><h3>${esc(wt(titleKey))}</h3><p>${esc(wt(textKey))}</p></div></article>`).join("")}</div>${wizardNav()}`;
+  }
+  if (state.wizardStep === 2) {
+    return `${head()}<h2>${esc(wt("lookTitle"))}</h2>
       <form id="wizardForm" class="wizard-form">
         <div class="theme-picker wizard-theme-grid">${THEMES.map(([value, label, color]) => `<label class="theme-choice"><input type="radio" name="wizardTheme" value="${value}" ${theme === value ? "checked" : ""}><span style="--swatch:${color}"></span><b>${esc(t(label))}</b></label>`).join("")}</div>
         <div class="wizard-pills">${[["light", t("light")], ["dark", t("dark")]].map(([value, label]) => `<label><input type="radio" name="wizardMode" value="${value}" ${mode === value ? "checked" : ""}><span>${esc(label)}</span></label>`).join("")}</div>
       </form>${wizardNav()}`;
   }
-  if (state.wizardStep === 2) {
+  if (state.wizardStep === 3) {
     const toggles = [["showPrices", t("showPrices")], ["showGallery", t("showGallery")], ["showMoments", t("showMoments")], ["showSeedlings", t("showSeedlings")], ["showCustomers", t("showCustomers")]];
-    return `<div class="wizard-head"><img src="assets/app-logo.png" alt=""><button type="button" data-wizard-close>&times;</button></div>
-      ${wizardProgress()}<h2>${esc(wt("sectionsTitle"))}</h2>
-      <form id="wizardForm" class="wizard-form wizard-toggles">${toggles.map(([name, label]) => `<label class="toggle-row"><span>${esc(label)}</span><input name="${name}" type="checkbox" ${s[name] ? "checked" : ""}></label>`).join("")}<section class="wizard-template-section"><h3>${esc(wt("templatesTitle"))}</h3><div class="wizard-template-grid">${[["indoor", wt("templateIndoor")], ["garden", wt("templateGarden")], ["coleus", wt("templateColeus")], ["begonia", wt("templateBegonia")], ["cactus", wt("templateCactus")], ["custom", wt("templateCustom")]].map(([key, label]) => `<button type="button" class="${s.categoryTemplate === key ? "active" : ""}" data-category-template="${key}">${esc(label)}</button>`).join("")}</div></section></form>${wizardNav()}`;
-  }
-  return `<div class="wizard-head"><img src="assets/app-logo.png" alt=""><button type="button" data-wizard-close>&times;</button></div>
-    ${wizardProgress()}<h2>${esc(wt("startTitle"))}</h2><p>${esc(wt("startText"))}</p>
+    const selectedTemplates = selectedCategoryTemplates();
+    return `${head()}<h2>${esc(wt("sectionsTitle"))}</h2>
+      <form id="wizardForm" class="wizard-form wizard-toggles">
+        ${toggles.map(([name, label]) => `<label class="toggle-row"><span>${esc(label)}</span><input name="${name}" type="checkbox" ${s[name] ? "checked" : ""}></label>`).join("")}
+        <section class="wizard-template-section"><h3>${esc(wt("templatesTitle"))}</h3><p class="wizard-template-hint">${esc(wt("templateHint"))}</p>
+          <div class="wizard-template-grid">${CATEGORY_TEMPLATE_CHOICES.map(([key, label]) => { const starter = STARTER_CATEGORIES.find((item) => item.key === key); const icon = starter?.icon; return `<button type="button" class="${selectedTemplates.includes(key) ? "active" : ""}" data-category-template="${key}">${icon ? `<img src="${esc(icon)}" alt="">` : ""}<span>${esc(key === "custom" ? wt(label) : starterCategoryLabel(key))}</span></button>`; }).join("")}</div>
+        </section>
+      </form>${wizardNav()}`;
+  }  return `${head()}<h2>${esc(wt("startTitle"))}</h2><p>${esc(wt("startText"))}</p>
     <div class="wizard-start">
       <button type="button" class="save-pill" data-wizard-start="plant">${esc(wt("addPlant"))}</button>
       <button type="button" class="soft-action full" data-wizard-start="category">${esc(wt("createCategory"))}</button>
     </div>${wizardNav(true)}`;
 }
-
 
 function renderWizard() {
   if (!els.wizard || !els.wizardContent) return;
@@ -1735,15 +2013,20 @@ function render() {
   const albums = activeAlbums();
   const customers = activeCustomers();
   const moments = activeMoments();
+  const shownPlants = limitedItems("plants", plants);
+  const shownSeedlings = limitedItems("seedlings", seedlings);
+  const shownAlbums = limitedItems("gallery", albums);
+  const shownCustomers = limitedItems("customers", customers);
+  const shownMoments = limitedItems("moments", moments);
   els.cardGrid.hidden = state.view !== "plants" && state.view !== "seedlings";
   els.albumGrid.hidden = state.view !== "gallery";
   els.customerList.hidden = state.view !== "customers";
   els.momentList.hidden = state.view !== "moments";
   els.settingsPanel.hidden = state.view !== "settings";
-  els.cardGrid.innerHTML = state.view === "plants" ? plants.map(plantCard).join("") : state.view === "seedlings" ? seedlings.map(plantCard).join("") : "";
-  els.albumGrid.innerHTML = state.view === "gallery" ? albums.map(albumCard).join("") : "";
-  els.customerList.innerHTML = state.view === "customers" ? customers.map(customerCard).join("") : "";
-  els.momentList.innerHTML = state.view === "moments" ? momentHero(moments) + moments.map((item) => momentCard(item)).join("") : "";
+  els.cardGrid.innerHTML = state.view === "plants" ? shownPlants.map(plantCard).join("") + loadMoreButton("plants", plants) : state.view === "seedlings" ? shownSeedlings.map(plantCard).join("") + loadMoreButton("seedlings", seedlings) : "";
+  els.albumGrid.innerHTML = state.view === "gallery" ? shownAlbums.map(albumCard).join("") + loadMoreButton("gallery", albums) : "";
+  els.customerList.innerHTML = state.view === "customers" ? shownCustomers.map(customerCard).join("") + loadMoreButton("customers", customers) : "";
+  els.momentList.innerHTML = state.view === "moments" ? momentHero(moments) + shownMoments.map((item) => momentCard(item)).join("") + loadMoreButton("moments", moments) : "";
   els.settingsPanel.innerHTML = state.view === "settings" ? settingsView() : "";
 
   document.querySelectorAll("[data-gallery-nav], [data-gallery-choice]").forEach((el) => { el.hidden = !state.data.settings.showGallery; });
@@ -1759,6 +2042,7 @@ function render() {
   document.querySelector("[data-view='customers'] span:not(.dock-icon)").textContent = t("customers");
   document.querySelector("[data-view='settings'] span:not(.dock-icon)").textContent = t("settings");
   document.querySelector("[data-add-main] span:not(.dock-icon)").textContent = t("add");
+  document.querySelector(".add-menu-head span").textContent = t("add");
   document.querySelector("[data-add-choice='plant'] strong").textContent = t("newPlant");
   document.querySelector("[data-add-choice='seedling'] strong").textContent = t("newSeedling");
   document.querySelector("[data-add-choice='album'] strong").textContent = t("newAlbum");
@@ -1768,12 +2052,12 @@ function render() {
   document.querySelectorAll("[data-view]").forEach((button) => button.classList.toggle("active", button.dataset.view === state.view));
   const emptyCount = state.view === "plants" ? plants.length : state.view === "seedlings" ? seedlings.length : state.view === "gallery" ? albums.length : state.view === "moments" ? moments.length : state.view === "customers" ? customers.length : 1;
   els.empty.hidden = emptyCount > 0 || !!state.editing;
+  document.querySelector(".search-panel").hidden = state.view === "settings" || !!state.detail;
   els.addSheet.hidden = !state.addOpen;
   renderWizard();
   renderQuickAdd();
   renderDetail();
-  startMomentSlideshow();
-}
+  startMomentSlideshow();}
 
 function renderSelectedPhotoPreview(form) {
   const preview = form?.querySelector("[data-photo-preview]");
@@ -1984,6 +2268,34 @@ function makePhotoMain(index) {
   render();
 }
 
+function deleteCategoriesBulk(names) {
+  const selected = [...new Set((names || []).map((name) => String(name || "").trim()).filter(Boolean))];
+  if (!selected.length) {
+    showToast(t("selectCategoriesFirst"));
+    return;
+  }
+  const current = state.data.settings.categories || [];
+  const toDelete = selected.filter((name) => current.includes(name));
+  if (!toDelete.length) {
+    showToast(t("selectCategoriesFirst"));
+    return;
+  }
+  const confirmed = confirm(t("confirmBulkDeleteCategories", { count: toDelete.length }));
+  if (!confirmed) return;
+  const remaining = current.filter((category) => !toDelete.includes(category));
+  state.data.settings.categories = remaining.length ? remaining : ["Plants"];
+  state.data.settings.categoryIcons = state.data.settings.categoryIcons || {};
+  toDelete.forEach((name) => delete state.data.settings.categoryIcons[name]);
+  const fallback = state.data.settings.categories[0] || "Plants";
+  state.data.plants.forEach((item) => {
+    if (!item.seedling && toDelete.includes(item.category)) item.category = fallback;
+  });
+  state.category = state.data.settings.categories.includes(state.category) ? state.category : "all";
+  state.editing = null;
+  save();
+  render();
+  showToast(t("categoriesDeleted", { count: toDelete.length }));
+}
 function deleteCategoryByName(name) {
   if (!name) return;
   const confirmed = confirm((ft("confirmDelete") || "Delete {name}?").replace("{name}", name));
@@ -2194,12 +2506,14 @@ function bind() {
 
   els.search.addEventListener("input", (event) => {
     state.search = event.target.value;
+    resetVisibleLimit(state.view);
     render();
   });
 
   document.querySelectorAll("[data-view]").forEach((button) => {
     button.addEventListener("click", () => {
       state.view = button.dataset.view || "plants";
+      resetVisibleLimit(state.view);
       state.editing = null;
       state.detail = null;
       state.addOpen = false;
@@ -2214,7 +2528,6 @@ function bind() {
     openAdd(kind);
   };
   els.quickAdd?.addEventListener("click", quickAddClickHandler);
-  els.quickAdd?.addEventListener("pointerup", quickAddClickHandler);
   document.querySelector("[data-add-main]").addEventListener("click", () => {
     state.addOpen = true;
     state.editing = null;
@@ -2244,6 +2557,14 @@ function bind() {
   });
 
   document.addEventListener("click", (event) => {
+    const loadMore = event.target.closest("[data-load-more]");
+    if (loadMore) {
+      const view = loadMore.dataset.loadMore;
+      const step = view === "gallery" || view === "moments" ? 30 : 40;
+      state.visibleLimits[view] = (state.visibleLimits[view] || defaultLimitForView(view)) + step;
+      render();
+      return;
+    }
     if (event.target.closest("[data-open-wizard]")) {
       state.wizardOpen = true;
       state.wizardStep = 0;
@@ -2261,17 +2582,32 @@ function bind() {
       renderWizard();
       return;
     }
+    const customTemplateAdd = event.target.closest("[data-wizard-custom-add]");
+    if (customTemplateAdd) {
+      applyWizardForm();
+      const input = document.querySelector("[name=\"wizardCustomCategory\"]");
+      if (applyCustomWizardCategory(input?.value)) {
+        save();
+        renderWizard();
+        showToast(wt("customCategoryAdded"));
+      } else {
+        input?.focus();
+      }
+      return;
+    }
     const categoryTemplate = event.target.closest("[data-category-template]");
     if (categoryTemplate) {
       applyWizardForm();
-      applyCategoryTemplate(categoryTemplate.dataset.categoryTemplate);
+      toggleCategoryTemplateSelection(categoryTemplate.dataset.categoryTemplate);
       save();
       renderWizard();
-      showToast(wt("templateApplied"));
       return;
-    }    if (event.target.closest("[data-wizard-next]")) {
+    }
+    if (event.target.closest("[data-wizard-next]")) {
       applyWizardForm();
-      state.wizardStep = Math.min(3, state.wizardStep + 1);
+      if (state.wizardStep === 3) applySelectedWizardTemplates();
+      state.wizardStep = Math.min(WIZARD_LAST_STEP, state.wizardStep + 1);
+      save();
       renderWizard();
       return;
     }
@@ -2321,6 +2657,7 @@ function bind() {
         return;
       }
       state.category = category.dataset.category || "all";
+      resetVisibleLimit("plants");
       state.editing = null;
       render();
       return;
@@ -2407,6 +2744,12 @@ function bind() {
     if (photoDelete) return deletePhoto(Number(photoDelete.dataset.photoDelete));
     const photoMain = event.target.closest("[data-photo-main]");
     if (photoMain) return makePhotoMain(Number(photoMain.dataset.photoMain));
+    const bulkDeleteCategories = event.target.closest("[data-bulk-delete-categories]");
+    if (bulkDeleteCategories) {
+      const form = bulkDeleteCategories.closest("#settingsForm");
+      const selected = [...(form?.querySelectorAll("input[name=\"bulkCategories\"]:checked") || [])].map((input) => input.value);
+      return deleteCategoriesBulk(selected);
+    }
     const deleteCategory = event.target.closest("[data-delete-category]");
     if (deleteCategory) return deleteCategoryByName(deleteCategory.dataset.deleteCategory);
     if (event.target.closest("[data-delete-current]")) return deleteCurrent();
@@ -2416,7 +2759,9 @@ function bind() {
     if (event.target?.id === "wizardForm") {
       event.preventDefault();
       applyWizardForm();
-      state.wizardStep = Math.min(3, state.wizardStep + 1);
+      if (state.wizardStep === 3) applySelectedWizardTemplates();
+      state.wizardStep = Math.min(WIZARD_LAST_STEP, state.wizardStep + 1);
+      save();
       renderWizard();
       return;
     }
@@ -2548,8 +2893,8 @@ function bind() {
 function handleBackStep() {
   if (state.viewer) { closeViewer(); return true; }
   if (state.addOpen) { state.addOpen = false; render(); return true; }
-  if (state.detail) { state.detail = null; render(); return true; }
   if (state.editing) { state.editing = null; render(); return true; }
+  if (state.detail) { state.detail = null; render(); return true; }
   if (state.category !== "all") { state.category = "all"; render(); return true; }
   if (state.view !== "plants") { state.view = "plants"; state.search = ""; render(); return true; }
   return true;
@@ -2579,6 +2924,30 @@ function init() {
 }
 
 init();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
